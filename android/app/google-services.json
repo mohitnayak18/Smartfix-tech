@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "447654304394",
+    "project_id": "smartfixapp-18342",
+    "storage_bucket": "smartfixapp-18342.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447654304394:android:4a1f00972a3e9e037dab73",
+        "android_client_info": {
+          "package_name": "com.example.smartfixapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlptYrZtG8smmxWyTpOcuAnriHs4YhQT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
