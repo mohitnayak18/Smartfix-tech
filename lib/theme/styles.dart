@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:smartfixapp/theme/theme.dart';
+import 'package:smartfixTech/theme/theme.dart';
 
 /// A chunk of styles used in the application.
 /// Will be ignored for test since all are static values and would not change.

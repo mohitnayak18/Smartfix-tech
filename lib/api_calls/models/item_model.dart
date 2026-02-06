@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 
-import 'package:smartfixapp/api_calls/models/sub_category.dart';
+import 'package:smartfixTech/api_calls/models/sub_category.dart';
 
 Service serviceFromJson(String str) => Service.fromJson(json.decode(str));
 

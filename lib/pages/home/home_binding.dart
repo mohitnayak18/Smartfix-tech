@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/home/home.dart';
+import 'package:smartfixTech/pages/home/home.dart';
 
 class HomeBinding extends Bindings {
   @override

@@ -1,12 +1,15 @@
 // controllers/order_controller.dart
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/order_model.dart';
+import 'package:smartfixTech/api_calls/models/order_model.dart';
 import 'package:uuid/uuid.dart';
 
 class OrderController extends GetxController {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Uuid _uuid = const Uuid();
 
   // Orders collection
@@ -21,7 +24,6 @@ class OrderController extends GetxController {
 
   // Generate order number
   String _generateOrderNumber() {
-    // final timestamp = Timestamp.now().seconds;
     final randomString = _uuid.v4().substring(0, 6).toUpperCase();
     return 'ORD-$randomString';
   }
@@ -38,7 +40,7 @@ class OrderController extends GetxController {
       'status': status,
       'description': description,
       'timestamp': Timestamp.now(),
-      'performedBy': performedBy,
+      'performedBy': performedBy ?? 'System',
       'notes': notes,
     };
 
@@ -48,7 +50,7 @@ class OrderController extends GetxController {
     });
   }
 
-  // Create order from cart
+  // Create order from cart - FIXED VERSION
   Future<Map<String, dynamic>> createOrderFromCart({
     required List<Map<String, dynamic>> cartItems,
     required double subtotal,
@@ -59,7 +61,8 @@ class OrderController extends GetxController {
     required double totalAmount,
     required Map<String, dynamic> address,
     required String phone,
-    String? userId,
+    required String userId, // Made required
+    String? customerName,
   }) async {
     try {
       isLoading(true);
@@ -69,9 +72,6 @@ class OrderController extends GetxController {
       final orderId = _uuid.v4();
       final orderNumber = _generateOrderNumber();
       final now = Timestamp.now();
-
-      // Get user ID
-      final currentUserId = userId ?? _getCurrentUserId();
 
       // Prepare initial timeline
       final initialTimeline = [
@@ -88,8 +88,7 @@ class OrderController extends GetxController {
         // IDs
         'orderId': orderId,
         'orderNumber': orderNumber,
-        'userId': currentUserId,
-
+        'userId': userId, // IMPORTANT: Store user ID
         // Order details
         'items': cartItems.map((item) {
           item['itemId'] ??= _uuid.v4();
@@ -116,7 +115,7 @@ class OrderController extends GetxController {
         // Customer info
         'address': address,
         'phone': phone,
-        'customerName': address['title'] ?? 'Customer',
+        'customerName': customerName ?? address['title'] ?? 'Customer',
 
         // Status
         'status': 'pending',
@@ -141,14 +140,14 @@ class OrderController extends GetxController {
         'notes': '',
       };
 
-      // Save to Firestore
+      // ✅ FIXED: Save ONLY once under orderId
       await ordersCollection.doc(orderId).set(orderData);
 
       // Add to local list
       final newOrder = OrderModel.fromFirestore(
         await ordersCollection.doc(orderId).get(),
       );
-      orders.insert(0, newOrder); // Add to beginning of list
+      orders.insert(0, newOrder);
 
       isLoading(false);
 
@@ -167,17 +166,18 @@ class OrderController extends GetxController {
     }
   }
 
-  // ✅ FIXED: Fetch user orders WITHOUT composite index requirement
+  // ✅ FIXED: Fetch user orders
   Future<void> fetchUserOrders(String userId) async {
+    // Changed parameter name
     try {
       isLoading(true);
       error.value = '';
 
-      // Query WITHOUT orderBy to avoid index requirement
+      // Query orders by userId field
       final snapshot = await ordersCollection
-          // .where('userId', isEqualTo: userId)
+          .where('userId', isEqualTo: userId)
           .get();
-
+      log('Fetched ${snapshot.docs.length} orders for user $userId');
       if (snapshot.docs.isEmpty) {
         orders.value = [];
         isLoading(false);
@@ -224,7 +224,7 @@ class OrderController extends GetxController {
     }
   }
 
-  // ✅ FIXED: Stream user orders WITHOUT composite index requirement
+  // ✅ FIXED: Stream user orders
   Stream<List<dynamic>> streamUserOrders(String userId) {
     try {
       return ordersCollection
@@ -239,6 +239,8 @@ class OrderController extends GetxController {
               try {
                 final order = OrderModel.fromFirestore(doc);
                 orderList.add(order);
+                log('Order parsed successfully: ${order.orderId}');
+                log('Order details: ${order}');
               } catch (e) {
                 print('Error parsing document ${doc.id}: $e');
               }
@@ -250,12 +252,6 @@ class OrderController extends GetxController {
           })
           .handleError((error) {
             print('Stream error: $error');
-
-            // If index error, return empty list and log
-            if (error.toString().contains('index')) {
-              print('Firestore index missing. Please create composite index.');
-            }
-
             return [];
           });
     } catch (e) {
@@ -372,6 +368,7 @@ class OrderController extends GetxController {
   Future<bool> cancelOrder({
     required String orderId,
     required String reason,
+    String? userId, // Optional: who cancelled
   }) async {
     try {
       final now = Timestamp.now();
@@ -387,7 +384,7 @@ class OrderController extends GetxController {
         orderId: orderId,
         status: 'cancelled',
         description: 'Order cancelled: $reason',
-        performedBy: 'Customer',
+        performedBy: userId ?? 'Customer',
       );
 
       // Update local orders list
@@ -469,12 +466,6 @@ class OrderController extends GetxController {
   }
 
   // Helper methods
-  String _getCurrentUserId() {
-    // TODO: Replace with actual user ID from authentication
-    // For testing, use a fixed user ID
-    return 'test_user_id_123';
-  }
-
   String _getStatusText(String status) {
     final statusMap = {
       'pending': 'Pending',
@@ -495,9 +486,16 @@ class OrderController extends GetxController {
     currentOrder.value = null;
   }
 
+  // Clear all data
+  void clearAll() {
+    orders.clear();
+    currentOrder.value = null;
+    error.value = '';
+  }
+
   @override
   void onClose() {
-    clearCurrentOrder();
+    clearAll();
     super.onClose();
   }
 }

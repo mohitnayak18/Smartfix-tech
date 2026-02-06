@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/phonemodels/models_controller.dart';
-import 'package:smartfixapp/pages/product_screen/product_view.dart';
-// import 'package:smartfixapp/pages/home/navigation_pages/home/product/product_full_screen.dart';
+import 'package:smartfixTech/pages/phonemodels/models_controller.dart';
+import 'package:smartfixTech/pages/product_screen/product_view.dart';
+// import 'package:smartfixTech/pages/home/navigation_pages/home/product/product_full_screen.dart';
 
 class ModelsView extends StatefulWidget {
   final String brandId;

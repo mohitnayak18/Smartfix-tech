@@ -4,15 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/home/navigation_pages/home/widgets/home_appbar.dart';
+import 'package:smartfixTech/pages/home/navigation_pages/home/widgets/home_appbar.dart';
 //import 'package:smartfixapp/pages/home/navigation_pages/home/widgets/promoslider.dart';
-import 'package:smartfixapp/pages/home/widgets/baneer_view.dart';
-import 'package:smartfixapp/pages/home/widgets/gridlayout.dart';
-import 'package:smartfixapp/pages/home/widgets/hprimary_header_container.dart';
-import 'package:smartfixapp/pages/home/widgets/search_contanier.dart';
-import 'package:smartfixapp/pages/home/widgets/section_heading.dart';
-import 'package:smartfixapp/pages/home/widgets/vertical_image.dart';
-import 'package:smartfixapp/theme/dimens.dart';
+import 'package:smartfixTech/pages/home/widgets/baneer_view.dart';
+import 'package:smartfixTech/pages/home/widgets/gridlayout.dart';
+import 'package:smartfixTech/pages/home/widgets/hprimary_header_container.dart';
+import 'package:smartfixTech/pages/home/widgets/search_contanier.dart';
+import 'package:smartfixTech/pages/home/widgets/section_heading.dart';
+import 'package:smartfixTech/pages/home/widgets/vertical_image.dart';
+import 'package:smartfixTech/theme/dimens.dart';
 
 class HomeDashboard extends StatefulWidget {
   const HomeDashboard({super.key});

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:smartfixapp/pages/cart/cart_controller.dart';
-import 'package:smartfixapp/pages/cart/widget/adress_mangement.dart';
-import 'package:smartfixapp/pages/cart/widget/checkout_bar.dart';
-import 'package:smartfixapp/pages/cart/widget/save_adress.dart';
+import 'package:smartfixTech/pages/cart/cart_controller.dart';
+import 'package:smartfixTech/pages/cart/widget/adress_mangement.dart';
+import 'package:smartfixTech/pages/cart/widget/checkout_bar.dart';
+import 'package:smartfixTech/pages/cart/widget/save_adress.dart';
 
 // ==================== CONSTANTS & STYLES ====================
 const _appBarTitleStyle = TextStyle(
@@ -136,7 +136,7 @@ class CartView extends StatelessWidget {
                 _buildCartItemsTitle(),
                 _buildCartItemsList(cartCtrl),
                 _buildAddressTitle(),
-                _buildAddressSection(cartCtrl),
+                // _buildAddressSection(cartCtrl),
                 _buildCheckoutSection(cartCtrl),
               ],
             ),
@@ -605,7 +605,6 @@ class CartView extends StatelessWidget {
     );
   }
 
-  // ==================== LOADING STATE ====================
   Widget _buildLoadingState() {
     return Center(
       child: Column(

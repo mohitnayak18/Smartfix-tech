@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/brand_model.dart';
-import 'package:smartfixapp/api_calls/models/product_model.dart';
-import 'package:smartfixapp/pages/store/widgets/store_repository.dart';
+import 'package:smartfixTech/api_calls/models/brand_model.dart';
+import 'package:smartfixTech/api_calls/models/product_model.dart';
+import 'package:smartfixTech/pages/store/widgets/store_repository.dart';
 
 class StoreController extends GetxController {
   final StoreRepository _repository = StoreRepository();

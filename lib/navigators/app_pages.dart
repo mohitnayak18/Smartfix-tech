@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/cart/cart.dart';
+import 'package:smartfixTech/pages/cart/cart.dart';
 
-import 'package:smartfixapp/pages/home/home.dart';
-import 'package:smartfixapp/pages/onboarding/onboarding.dart';
-import 'package:smartfixapp/pages/pages.dart';
-import 'package:smartfixapp/pages/auth/auth.dart';
-import 'package:smartfixapp/pages/profile/profile.dart';
+import 'package:smartfixTech/pages/home/home.dart';
+import 'package:smartfixTech/pages/onboarding/onboarding.dart';
+import 'package:smartfixTech/pages/pages.dart';
+import 'package:smartfixTech/pages/auth/auth.dart';
+import 'package:smartfixTech/pages/profile/profile.dart';
 
 
 part 'app_routes.dart';
@@ -78,7 +78,7 @@ class AppPages {
     ),
     GetPage(
       name: '/orderDetails',
-      page: () => OrderDetailsScreen(orderId: Get.arguments['orderId']),
+      page: () => OrderDetailsScreen(orderId: Get.arguments['orderId'], orderNumber: Get.arguments['orderNumber']),
       binding: CartBinding(), // 🔥 IMPORTANT
     ),
     // GetPage(

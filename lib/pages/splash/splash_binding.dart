@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/pages.dart';
+import 'package:smartfixTech/pages/pages.dart';
 
 class SplashBinding extends Bindings {
   @override

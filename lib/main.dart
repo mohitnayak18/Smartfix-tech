@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/utils/utils.dart';
+
+import 'package:smartfixTech/utils/utils.dart';
 
 import 'api_calls/services/services.dart';
 import 'navigators/navigators.dart';

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:smartfixapp/pages/cart/cart_controller.dart';
+import 'package:smartfixTech/pages/cart/cart_controller.dart';
 import 'package:uuid/uuid.dart';
 
 class CheckoutController extends GetxController {

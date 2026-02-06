@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_places_autocomplete_widgets/address_autocomplete_widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:smartfixapp/pages/cart/cart_controller.dart';
+import 'package:smartfixTech/pages/cart/cart_controller.dart';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCipNHTns2IzWUpepl1zH-cOBAAaRq297s';
 

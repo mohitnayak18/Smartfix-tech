@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/auth/auth.dart';
+import 'package:smartfixTech/pages/auth/auth.dart';
 
 class AuthBinding extends Bindings {
   @override

@@ -1,8 +1,8 @@
-import 'package:smartfixapp/pages/home/home.dart';
+import 'package:smartfixTech/pages/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/profile/profile_view.dart';
-import 'package:smartfixapp/pages/store/store_screen.dart';
+import 'package:smartfixTech/pages/profile/profile_view.dart';
+import 'package:smartfixTech/pages/store/store_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

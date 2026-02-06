@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/theme/dimens.dart';
-import 'package:smartfixapp/theme/styles.dart';
+import 'package:smartfixTech/theme/dimens.dart';
+import 'package:smartfixTech/theme/styles.dart';
 
 class InfoScreen extends StatelessWidget {
   const InfoScreen({super.key, required this.text, required this.title});

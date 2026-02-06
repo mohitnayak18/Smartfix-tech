@@ -1,6 +1,6 @@
 
 import 'package:get/get.dart';
-import 'package:smartfixapp/navigators/navigators.dart';
+import 'package:smartfixTech/navigators/navigators.dart';
 
 class RouteManagement {
   /// Go to the splash screen.

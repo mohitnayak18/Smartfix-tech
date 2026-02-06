@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/services/services.dart';
-import 'package:smartfixapp/navigators/navigators.dart';
-import 'package:smartfixapp/utils/utils.dart';
+import 'package:smartfixTech/api_calls/services/services.dart';
+import 'package:smartfixTech/navigators/navigators.dart';
+import 'package:smartfixTech/utils/utils.dart';
 
 class SplashController extends GetxController {
   final _commonService = Get.find<CommonService>();

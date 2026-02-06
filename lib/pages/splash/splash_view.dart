@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/pages.dart';
-import 'package:smartfixapp/utils/asset_constants.dart';
+import 'package:smartfixTech/pages/pages.dart';
+import 'package:smartfixTech/utils/asset_constants.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});

@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/shadowstyle.dart';
-import 'package:smartfixapp/pages/brands/brands_view.dart';
-import 'package:smartfixapp/pages/home/navigation_pages/images/rounded.dart';
+import 'package:smartfixTech/api_calls/models/shadowstyle.dart';
+import 'package:smartfixTech/pages/brands/brands_view.dart';
+import 'package:smartfixTech/pages/home/navigation_pages/images/rounded.dart';
 
 class ProductcardVertical extends StatelessWidget {
   const ProductcardVertical({

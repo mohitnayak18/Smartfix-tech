@@ -8,8 +8,8 @@ import 'dart:developer';
 
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
-import 'package:smartfixapp/api_calls/api_call.dart';
-import 'package:smartfixapp/utils/utils.dart';
+import 'package:smartfixTech/api_calls/api_call.dart';
+import 'package:smartfixTech/utils/utils.dart';
 
 /// API WRAPPER to call all the APIs and handle the error status codes
 class ApiHelper {

@@ -1,7 +1,7 @@
 // lib/screens/repairs_screen.dart
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:smartfixapp/api_calls/services/aapi_service.dart';
+import 'package:smartfixTech/api_calls/services/aapi_service.dart';
 
 
 class RepairsScreen extends StatefulWidget {

@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/main.dart';
-import 'package:smartfixapp/navigators/routes_management.dart';
+import 'package:smartfixTech/main.dart';
+import 'package:smartfixTech/navigators/routes_management.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

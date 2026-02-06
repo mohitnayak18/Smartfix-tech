@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/banner_model.dart';
+import 'package:smartfixTech/api_calls/models/banner_model.dart';
 
 class BannerController extends GetxController {
   // State

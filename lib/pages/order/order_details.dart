@@ -1,20 +1,22 @@
 // pages/orders/order_details_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/order_model.dart';
-import 'package:smartfixapp/pages/home/home.dart';
-import 'package:smartfixapp/pages/order/order_controller.dart';
+import 'package:smartfixTech/api_calls/models/order_model.dart';
+import 'package:smartfixTech/pages/home/home.dart';
+import 'package:smartfixTech/pages/order/order_controller.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final String orderId;
+  final String orderNumber;
 
-  OrderDetailsScreen({super.key, required this.orderId});
+  OrderDetailsScreen({super.key, required this.orderId, required this.orderNumber});
 
   @override
   Widget build(BuildContext context) {
     // Use Get.find to get the existing controller instance
+    // final ProductController controller = Get.put(homeco());
     final OrderController orderCtrl = Get.put(OrderController());
-
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order Details'),

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smartfixapp/api_calls/models/order_model.dart';
-import 'package:smartfixapp/pages/order/order_details.dart';
-import 'package:smartfixapp/pages/home/home_screen.dart';
-import 'package:smartfixapp/theme/dimens.dart';
-import 'package:smartfixapp/utils/asset_constants.dart';
+import 'package:smartfixTech/api_calls/models/order_model.dart';
+import 'package:smartfixTech/pages/order/order_details.dart';
+import 'package:smartfixTech/pages/home/home_screen.dart';
+import 'package:smartfixTech/theme/dimens.dart';
+import 'package:smartfixTech/utils/asset_constants.dart';
 
 class OrderSuccessView extends StatelessWidget {
   final OrderModel? order;
   final String orderId;
+  final String orderNumber;
 
   const OrderSuccessView({
     super.key,
     required this.orderId,
     this.order,
+    required this.orderNumber,
   });
 
   @override
@@ -54,6 +56,7 @@ class OrderSuccessView extends StatelessWidget {
                   Get.to(
                     () => OrderDetailsScreen(
                       orderId: order?.orderId ?? orderId,
+                      orderNumber: order?.orderNumber ?? orderNumber,
                     ),
                   );
                 },

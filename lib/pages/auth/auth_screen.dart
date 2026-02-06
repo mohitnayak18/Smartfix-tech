@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
-import 'package:smartfixapp/pages/auth/auth_controller.dart';
-import 'package:smartfixapp/theme/dimens.dart';
-import 'package:smartfixapp/utils/asset_constants.dart';
+import 'package:smartfixTech/pages/auth/auth_controller.dart';
+import 'package:smartfixTech/theme/dimens.dart';
+import 'package:smartfixTech/utils/asset_constants.dart';
 
 class OtpScreen extends StatelessWidget {
   OtpScreen({super.key});

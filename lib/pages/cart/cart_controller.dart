@@ -4,9 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/cart_model.dart';
-import 'package:smartfixapp/api_calls/models/order_model.dart';
-import 'package:smartfixapp/pages/cart/cart.dart';
+import 'package:smartfixTech/api_calls/models/cart_model.dart';
+import 'package:smartfixTech/api_calls/models/order_model.dart';
+import 'package:smartfixTech/pages/cart/cart.dart';
 import 'package:uuid/uuid.dart';
 
 class CartController extends GetxController {

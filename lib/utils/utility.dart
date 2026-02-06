@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:smartfixapp/theme/theme.dart';
-import 'package:smartfixapp/widgets/widgets.dart';
+import 'package:smartfixTech/theme/theme.dart';
+import 'package:smartfixTech/widgets/widgets.dart';
 
 abstract class Utility {
   static void printDLog(String message) {

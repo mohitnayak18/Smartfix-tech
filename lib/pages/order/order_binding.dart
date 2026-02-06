@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import 'package:smartfixapp/pages/order/order_controller.dart';
+import 'package:smartfixTech/pages/order/order_controller.dart';
 
 class OrderBinding extends Bindings {
   @override

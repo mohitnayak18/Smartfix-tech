@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/services/common_service.dart';
-import 'package:smartfixapp/navigators/app_pages.dart';
-import 'package:smartfixapp/utils/utils.dart';
+import 'package:smartfixTech/api_calls/services/common_service.dart';
+import 'package:smartfixTech/navigators/app_pages.dart';
+import 'package:smartfixTech/utils/utils.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth auth = FirebaseAuth.instance;

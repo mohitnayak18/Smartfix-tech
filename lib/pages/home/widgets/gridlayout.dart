@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smartfixapp/pages/home/navigation_pages/home/product/product_vertical.dart';
+import 'package:smartfixTech/pages/home/navigation_pages/home/product/product_vertical.dart';
 
 class Gridlayout extends StatelessWidget {
   const Gridlayout({super.key, required this.docs});

@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/brands/brands_controller.dart';
-import 'package:smartfixapp/pages/phonemodels/models_view.dart';
+import 'package:smartfixTech/pages/brands/brands_controller.dart';
+import 'package:smartfixTech/pages/phonemodels/models_view.dart';
 
 class BrandsView extends StatelessWidget {
   BrandsView({

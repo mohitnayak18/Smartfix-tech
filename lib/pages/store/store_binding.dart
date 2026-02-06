@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/store/store_controller.dart';
+import 'package:smartfixTech/pages/store/store_controller.dart';
 
 class StoreBinding implements Bindings {
   @override

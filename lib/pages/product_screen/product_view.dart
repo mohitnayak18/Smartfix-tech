@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/cart_model.dart';
-import 'package:smartfixapp/pages/cart/cart_controller.dart';
-import 'package:smartfixapp/pages/cart/cart_view.dart';
-import 'package:smartfixapp/pages/product_screen/product_controller.dart';
-import 'package:smartfixapp/theme/dimens.dart';
-// import 'package:smartfixapp/pages/product_scren/product_controller.dart';
+import 'package:smartfixTech/api_calls/models/cart_model.dart';
+import 'package:smartfixTech/pages/cart/cart_controller.dart';
+import 'package:smartfixTech/pages/cart/cart_view.dart';
+import 'package:smartfixTech/pages/product_screen/product_controller.dart';
+import 'package:smartfixTech/theme/dimens.dart';
+// import 'package:smartfixTech/pages/product_scren/product_controller.dart';
 
 class ProductFullScreen extends StatefulWidget {
   const ProductFullScreen({super.key});

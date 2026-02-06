@@ -1,5 +1,5 @@
 
-import 'package:smartfixapp/api_calls/connect_helper.dart';
+import 'package:smartfixTech/api_calls/connect_helper.dart';
 
 class Repository {
   Repository(this._connectHelper);

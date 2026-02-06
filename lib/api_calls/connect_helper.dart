@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 
-import 'package:smartfixapp/api_calls/api_call.dart';
-import 'package:smartfixapp/utils/app_constants.dart';
+import 'package:smartfixTech/api_calls/api_call.dart';
+import 'package:smartfixTech/utils/app_constants.dart';
 
 class ConnectHelper {
   final _flutterSecureStorage = const FlutterSecureStorage();

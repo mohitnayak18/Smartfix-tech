@@ -1,4 +1,4 @@
-import 'package:smartfixapp/pages/home/widgets/curved_edges.dart';
+import 'package:smartfixTech/pages/home/widgets/curved_edges.dart';
 import 'package:flutter/material.dart';
 
 class HomeCurvedEdgeWidget extends StatelessWidget {

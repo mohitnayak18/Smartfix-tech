@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/home/navigation_pages/images/banner.dart';
+import 'package:smartfixTech/pages/home/navigation_pages/images/banner.dart';
 
 
 class BannerBinding extends Bindings {

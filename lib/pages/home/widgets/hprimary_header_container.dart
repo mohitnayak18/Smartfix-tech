@@ -1,5 +1,5 @@
-import 'package:smartfixapp/pages/home/widgets/curved_edge_widget.dart';
-import 'package:smartfixapp/pages/home/widgets/home_circular_contanier.dart';
+import 'package:smartfixTech/pages/home/widgets/curved_edge_widget.dart';
+import 'package:smartfixTech/pages/home/widgets/home_circular_contanier.dart';
 import 'package:flutter/material.dart';
 
 class HomePrimaryHeaderContainer extends StatelessWidget {

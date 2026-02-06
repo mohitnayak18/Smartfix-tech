@@ -1,4 +1,4 @@
-import 'package:smartfixapp/theme/dimens.dart';
+import 'package:smartfixTech/theme/dimens.dart';
 import 'package:flutter/material.dart';
 
 class LoginTextField extends StatelessWidget {

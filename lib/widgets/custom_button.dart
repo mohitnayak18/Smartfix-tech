@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:smartfixapp/theme/theme.dart';
+import 'package:smartfixTech/theme/theme.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({

@@ -1,13 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:smartfixapp/api_calls/models/order_model.dart';
-import 'package:smartfixapp/pages/cart/cart_controller.dart';
-import 'package:smartfixapp/pages/home/checkout/checkout_controller.dart';
-import 'package:smartfixapp/pages/home/checkout/confrom_order.dart';
-// import 'package:smartfixapp/pages/home/checkout_screen/confrom_order.dart';
-import 'package:smartfixapp/pages/order/order.dart';
-import 'package:smartfixapp/theme/theme.dart';
+import 'package:smartfixTech/api_calls/models/order_model.dart';
+import 'package:smartfixTech/pages/cart/cart_controller.dart';
+import 'package:smartfixTech/pages/home/checkout/checkout_controller.dart';
+import 'package:smartfixTech/pages/home/checkout/confrom_order.dart';
+import 'package:smartfixTech/pages/order/order_controller.dart';
+import 'package:smartfixTech/theme/theme.dart';
 import 'package:uuid/uuid.dart';
 
 class CheckoutView extends StatelessWidget {
@@ -17,7 +17,6 @@ class CheckoutView extends StatelessWidget {
   Widget build(BuildContext context) {
     final CheckoutController checkoutCtrl = Get.put(CheckoutController());
     final CartController cartCtrl = Get.find<CartController>();
-    final OrderController orderCtrl = Get.put(OrderController());
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -58,7 +57,7 @@ class CheckoutView extends StatelessWidget {
               _buildTermsSection(),
 
               // Checkout Button
-              _buildCheckoutButton(checkoutCtrl, cartCtrl, orderCtrl),
+              _buildCheckoutButton(checkoutCtrl, cartCtrl),
 
               // Bottom padding
               SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
@@ -223,12 +222,15 @@ class CheckoutView extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: "10-digit mobile number",
                 counterText: "",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: Colors.teal.shade400,
                     width: 2.0,
                   ),
-                  borderRadius: BorderRadius.circular(9),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: const Icon(
                   Icons.phone,
@@ -414,7 +416,7 @@ class CheckoutView extends StatelessWidget {
                         Obx(() {
                           final location =
                               cartCtrl.selectedAddress['address'] ??
-                              "No address selected";
+                                  "No address selected";
                           return Text(
                             location,
                             style: const TextStyle(
@@ -511,7 +513,6 @@ class CheckoutView extends StatelessWidget {
               child: const Text("USE THIS ADDRESS"),
             ),
           ),
-          // SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
         ],
       ),
     );
@@ -835,7 +836,6 @@ class CheckoutView extends StatelessWidget {
   Widget _buildCheckoutButton(
     CheckoutController checkoutCtrl,
     CartController cartCtrl,
-    OrderController orderCtrl,
   ) {
     return Container(
       color: Colors.white,
@@ -865,7 +865,7 @@ class CheckoutView extends StatelessWidget {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () => _placeOrder(checkoutCtrl, cartCtrl, orderCtrl),
+              onPressed: () => _placeOrder(checkoutCtrl, cartCtrl),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal.shade700,
                 foregroundColor: Colors.white,
@@ -890,19 +890,19 @@ class CheckoutView extends StatelessWidget {
     );
   }
 
-  // checkout_view.dart - Updated _placeOrder method
+  // Updated _placeOrder method
   Future<void> _placeOrder(
     CheckoutController checkoutCtrl,
     CartController cartCtrl,
-    OrderController orderCtrl,
   ) async {
     // Validate phone
     if (!checkoutCtrl.validatePhone()) {
       Get.snackbar(
         "Invalid Phone",
         "Please enter valid 10-digit number",
-        backgroundColor: Colors.white,
-        colorText: Colors.black87,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
@@ -914,27 +914,31 @@ class CheckoutView extends StatelessWidget {
         checkoutCtrl.useSavedAddress
             ? "Please select an address from saved addresses"
             : "Please enter service address",
-        backgroundColor: Colors.white,
-        colorText: Colors.black87,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
+    // Show loading
     Get.dialog(
       const Center(child: CircularProgressIndicator(color: Colors.teal)),
       barrierDismissible: false,
     );
 
     try {
+      // Get current user ID
+      final String userId = _getCurrentUserId();
+
+      // Get controllers
+      final OrderController orderCtrl = Get.put(OrderController());
+
       // Prepare order data
       final orderItems = checkoutCtrl.prepareOrderItems();
       final addressData = checkoutCtrl.getAddressData();
 
-      // Get user ID (implement based on your auth system)
-      final userId = await _getCurrentUserId();
-
-      // Get OrderController and create order
-      // final orderCtrl = Get.put(OrderController());
+      // Create order
       final result = await orderCtrl.createOrderFromCart(
         cartItems: orderItems,
         subtotal: cartCtrl.subtotal.value,
@@ -945,28 +949,39 @@ class CheckoutView extends StatelessWidget {
         totalAmount: cartCtrl.totalPrice.value,
         address: addressData,
         phone: checkoutCtrl.phoneCtrl.text.trim(),
-        userId: userId,
+        userId: userId, // Pass the user ID
+        customerName: addressData['title'] ?? 'Customer',
       );
 
       Get.back(); // Close loading dialog
 
-      if (result != null && result['success'] == true) {
+      if (result['success'] == true) {
         // Clear cart after successful order
         cartCtrl.clearCart();
 
         // Navigate to success screen
-        final String orderId = result['orderId'] as String;
-        final OrderModel? order = result['order'] is OrderModel
-            ? result['order'] as OrderModel
-            : null;
+        Get.offAll(
+          () => OrderSuccessView(
+            orderId: result['orderId'] as String,
+            orderNumber: result['orderNumber'] as String,
+          ),
+        );
 
-        Get.off(() => OrderSuccessView(orderId: orderId, order: order));
+        // Show success message
+        Get.snackbar(
+          "Success!",
+          "Order #${result['orderNumber']} placed successfully",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
       } else {
         Get.snackbar(
           "Error",
-          "Failed to create order: ${result?['error'] ?? 'Unknown error'}",
+          "Failed to create order: ${result['error']}",
           backgroundColor: Colors.red,
           colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (e, stackTrace) {
@@ -975,24 +990,34 @@ class CheckoutView extends StatelessWidget {
       print('Stack trace: $stackTrace');
       Get.snackbar(
         "Error",
-        "Failed to place order: ${e.toString()}",
+        "Failed to place order. Please try again.",
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
 
   // Helper method to get current user ID
-  Future<String> _getCurrentUserId() async {
-    // TODO: Implement based on your authentication system
-    // Example with Firebase Auth:
-    // final user = FirebaseAuth.instance.currentUser;
-    // if (user != null) {
-    //   return user.uid;
-    // }
-
-    // For now, return a generated UUID
-    const Uuid uuid = Uuid();
-    return uuid.v4();
+  String _getCurrentUserId() {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.uid;
+      } else {
+        // If no user is logged in, create a guest user ID
+        // In production, you should redirect to login instead
+        const uuid = Uuid();
+        final guestId = 'guest_${uuid.v4().substring(0, 8)}';
+        print('No authenticated user, using guest ID: $guestId');
+        return guestId;
+      }
+    } catch (e) {
+      print('Error getting user ID: $e');
+      const uuid = Uuid();
+      return 'error_${uuid.v4().substring(0, 8)}';
+    }
   }
 }
+
+// Order Success View Screen

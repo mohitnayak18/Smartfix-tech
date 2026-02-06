@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:smartfixapp/pages/cart/cart_controller.dart';
-import 'package:smartfixapp/pages/home/checkout/checkout_view.dart';
+import 'package:smartfixTech/pages/cart/cart_controller.dart';
+import 'package:smartfixTech/pages/home/checkout/checkout_view.dart';
 
-import 'package:smartfixapp/theme/dimens.dart';
+import 'package:smartfixTech/theme/dimens.dart';
 
 class CheckoutBar extends StatelessWidget {
   final CartController cartCtrl;

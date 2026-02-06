@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:smartfixapp/api_calls/models/brand_model.dart';
-import 'package:smartfixapp/api_calls/models/product_model.dart';
+import 'package:smartfixTech/api_calls/models/brand_model.dart';
+import 'package:smartfixTech/api_calls/models/product_model.dart';
 
 class StoreRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

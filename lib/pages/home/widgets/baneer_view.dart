@@ -1,8 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/home/home.dart';
-import 'package:smartfixapp/pages/home/navigation_pages/images/rounded.dart';
+import 'package:smartfixTech/pages/home/home.dart';
+import 'package:smartfixTech/pages/home/navigation_pages/images/rounded.dart';
 
 class BaneerView extends StatelessWidget {
   const BaneerView({super.key});

@@ -1,4 +1,4 @@
-name: smartfixapp
+name: smartfixTech
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -82,7 +82,7 @@ dependencies:
   url_launcher: ^6.3.2
   otp_autofill: ^4.1.0
   pin_code_fields: ^7.4.0
-  flutter_launcher_icons: ^0.10.0
+  flutter_launcher_icons: ^0.14.4
   flutter_widget_from_html: ^0.17.0
   firebase_core: ^3.12.0
   firebase_auth: ^5.0.0
@@ -99,10 +99,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-flutter_icons:
-  android: true
+flutter_launcher_icons:
+  android: "ic_launcher"
   ios: true
-  image_path: "assets/images/assets/images/img.png"
+  image_path: "assets/images/img.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

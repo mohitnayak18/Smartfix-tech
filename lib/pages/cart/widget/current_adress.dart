@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
-import 'package:smartfixapp/pages/cart/cart_controller.dart';
+import 'package:smartfixTech/pages/cart/cart_controller.dart';
 
 class CurrentAddressWidget extends StatefulWidget {
   final CartController cartCtrl;
@@ -59,9 +59,6 @@ class _CurrentAddressWidgetState extends State<CurrentAddressWidget> {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // 📍 LOCATION FETCH
-  // ─────────────────────────────────────────────
 
   Future<void> _fetchLocationIfNeeded() async {
     if (_lastFetchedAt == null ||
@@ -97,9 +94,6 @@ class _CurrentAddressWidgetState extends State<CurrentAddressWidget> {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // 🗺 REVERSE GEOCODING
-  // ─────────────────────────────────────────────
 
   Future<void> _reverseGeocode(double lat, double lng) async {
     try {
@@ -125,9 +119,7 @@ class _CurrentAddressWidgetState extends State<CurrentAddressWidget> {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // ✅ SAVE CURRENT LOCATION (LOCAL ONLY)
-  // ─────────────────────────────────────────────
+
 
   void _saveCurrentLocationToCart() {
     const double businessLat = 28.7041;
@@ -159,10 +151,6 @@ class _CurrentAddressWidgetState extends State<CurrentAddressWidget> {
 
     widget.cartCtrl.setCurrentAddress(currentAddress);
   }
-
-  // ─────────────────────────────────────────────
-  // 🖥 UI
-  // ─────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {

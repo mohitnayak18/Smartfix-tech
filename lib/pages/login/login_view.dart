@@ -1,11 +1,11 @@
 import 'package:intl_phone_field/country_picker_dialog.dart';
-import 'package:smartfixapp/pages/login/login_controller.dart';
-import 'package:smartfixapp/theme/dimens.dart';
+import 'package:smartfixTech/pages/login/login_controller.dart';
+import 'package:smartfixTech/theme/dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:lottie/lottie.dart';
-import 'package:smartfixapp/utils/asset_constants.dart';
+import 'package:smartfixTech/utils/asset_constants.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});

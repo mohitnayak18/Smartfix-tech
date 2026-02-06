@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
-import 'package:smartfixapp/navigators/navigators.dart';
-import 'package:smartfixapp/utils/asset_constants.dart';
+import 'package:smartfixTech/navigators/navigators.dart';
+import 'package:smartfixTech/utils/asset_constants.dart';
 
 
 class OnboardingScreen extends StatefulWidget {

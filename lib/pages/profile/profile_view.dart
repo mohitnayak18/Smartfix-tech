@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/pages/home/home_controller.dart';
-import 'package:smartfixapp/pages/order/order_listscreen.dart';
+import 'package:smartfixTech/pages/home/home_controller.dart';
+import 'package:smartfixTech/pages/order/order_listscreen.dart';
 
 const _appBarTitleStyle = TextStyle(
   fontSize: 20,

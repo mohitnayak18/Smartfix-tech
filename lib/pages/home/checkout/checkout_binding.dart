@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import 'package:smartfixapp/pages/home/checkout/checkout_controller.dart';
+import 'package:smartfixTech/pages/home/checkout/checkout_controller.dart';
 
 class CheckoutBinding implements Bindings {
   @override

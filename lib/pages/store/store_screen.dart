@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixapp/api_calls/models/product_model.dart';
-import 'package:smartfixapp/pages/store/store_controller.dart';
+import 'package:smartfixTech/api_calls/models/product_model.dart';
+import 'package:smartfixTech/pages/store/store_controller.dart';
 
 const _appBarTitleStyle = TextStyle(
   fontSize: 23,

@@ -4,8 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:smartfixapp/api_calls/models/location_response_model.dart';
-import 'package:smartfixapp/api_calls/models/models.dart';
+import 'package:smartfixTech/api_calls/models/location_response_model.dart';
+import 'package:smartfixTech/api_calls/models/models.dart';
 
 Booking bookingFromJson(String str) => Booking.fromJson(json.decode(str));
 
