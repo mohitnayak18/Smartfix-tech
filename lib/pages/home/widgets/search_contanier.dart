@@ -1,7 +1,6 @@
 import 'package:smartfixTech/theme/dimens.dart';
 import 'package:flutter/material.dart';
 
-
 class Searchcontainer extends StatelessWidget {
   const Searchcontainer({
     super.key,
@@ -9,12 +8,14 @@ class Searchcontainer extends StatelessWidget {
     this.icon = Icons.search,
     this.showBackground = true,
     this.showBorder = true,
+    this.onTap, // 👈 added
   });
 
   final String text;
   final IconData icon;
   final bool showBackground;
   final bool showBorder;
+  final VoidCallback? onTap; // 👈 added
 
   @override
   Widget build(BuildContext context) {
@@ -22,31 +23,35 @@ class Searchcontainer extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Container(
-        width: double.infinity,
-        padding: Dimens.edgeInsets12,
-        decoration: BoxDecoration(
-          color: showBackground
-              ? (dark ? Colors.black12 : Colors.white)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          border: showBorder
-              ? Border.all(color: Colors.white)
-              : Border.all(color: Colors.transparent),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: Colors.grey,
-              size: 20,
-            ),
-            const SizedBox(width: 20),
-            Text(
-              text,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap, // 👈 click here
+        child: Container(
+          width: double.infinity,
+          padding: Dimens.edgeInsets12,
+          decoration: BoxDecoration(
+            color: showBackground
+                ? (dark ? Colors.black12 : Colors.white)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            border: showBorder
+                ? Border.all(color: Colors.white)
+                : Border.all(color: Colors.transparent),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: Colors.grey,
+                size: 20,
+              ),
+              const SizedBox(width: 20),
+              Text(
+                text,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
         ),
       ),
     );

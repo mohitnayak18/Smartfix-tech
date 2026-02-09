@@ -200,12 +200,18 @@ class OrderListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.teal.shade100,
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          Get.to(() => OrderDetailsScreen(orderId: order.orderId, orderNumber: order.orderNumber));
+          Get.to(
+            () => OrderDetailsScreen(
+              orderId: order.orderId,
+              orderNumber: order.orderNumber,
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -368,7 +374,12 @@ class OrderListCard extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Get.to(() => OrderDetailsScreen(orderId: order.orderId, orderNumber: order.orderNumber));
+                      Get.to(
+                        () => OrderDetailsScreen(
+                          orderId: order.orderId,
+                          orderNumber: order.orderNumber,
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal.shade50,

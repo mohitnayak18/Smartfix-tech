@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
 import 'package:smartfixTech/pages/cart/widget/adress_mangement.dart';
+import 'package:smartfixTech/pages/cart/widget/adress_widget.dart';
 import 'package:smartfixTech/pages/cart/widget/checkout_bar.dart';
 import 'package:smartfixTech/pages/cart/widget/save_adress.dart';
 
@@ -136,7 +137,7 @@ class CartView extends StatelessWidget {
                 _buildCartItemsTitle(),
                 _buildCartItemsList(cartCtrl),
                 _buildAddressTitle(),
-                // _buildAddressSection(cartCtrl),
+                _buildAddressSection(cartCtrl),
                 _buildCheckoutSection(cartCtrl),
               ],
             ),
@@ -225,7 +226,7 @@ class CartView extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: Colors.teal.shade600,
+                      color: const Color.fromARGB(255, 137, 0, 130),
                     ),
                   ),
                 ),
@@ -574,13 +575,11 @@ class CartView extends StatelessWidget {
   SliverToBoxAdapter _buildAddressSection(CartController cartCtrl) {
     return SliverToBoxAdapter(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
-        child: SaveAddressPage(cartCtrl: cartCtrl),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        child: AdressWidget(),
       ),
     );
   }
-
- 
 
   SliverToBoxAdapter _buildCheckoutSection(CartController cartCtrl) {
     return SliverToBoxAdapter(

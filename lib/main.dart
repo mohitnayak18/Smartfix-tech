@@ -3,31 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
 import 'package:smartfixTech/utils/utils.dart';
-
 import 'api_calls/services/services.dart';
 import 'navigators/navigators.dart';
 import 'theme/app_theme.dart';
-  
-  //Get.put(BannerController()); 
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-  
-    await Firebase.initializeApp(
-       
-        );
-    //    Get.put(BannerRepository(), permanent: true);
-    // Get.put(BannerController(), permanent: true);
+    await Firebase.initializeApp();
 
-
-  
     await initializeServices();
 
-  
     runApp(const MyApp());
   } catch (error) {
     Utility.printELog('❌ Firebase initialization failed: $error');
@@ -43,11 +31,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
-    SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-    );
-
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),

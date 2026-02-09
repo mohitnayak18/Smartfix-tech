@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
+import 'package:smartfixTech/pages/brands/brands.dart';
+import 'package:smartfixTech/pages/home/navigation_pages/home/product/product_vertical.dart';
 import 'package:smartfixTech/pages/home/navigation_pages/home/widgets/home_appbar.dart';
+import 'package:smartfixTech/pages/home/widgets/Search_Screen.dart';
 //import 'package:smartfixapp/pages/home/navigation_pages/home/widgets/promoslider.dart';
 import 'package:smartfixTech/pages/home/widgets/baneer_view.dart';
 import 'package:smartfixTech/pages/home/widgets/gridlayout.dart';
@@ -15,6 +18,7 @@ import 'package:smartfixTech/pages/home/widgets/vertical_image.dart';
 import 'package:smartfixTech/theme/dimens.dart';
 
 class HomeDashboard extends StatefulWidget {
+  final Service = 'title';
   const HomeDashboard({super.key});
 
   @override
@@ -29,7 +33,17 @@ class _HomeDashboardState extends State<HomeDashboard> {
       'icon': Icons.phone_android,
       'color': Colors.black,
       'onTap': () {
-        // this is pass Get.to(() => SecondScreen());
+        // this is pass
+        //      final data = docs[index].data();
+
+        // Get.to(() => ProductcardVertical(
+        //       id: data.id,
+        //       title: data['title'],
+        //       price: data['price'],
+        //       offer: data['offer'],
+        //       imageUrl: data['image'],
+        //       isVerified: data['isVerified'] ?? false,
+        //     ));
         // Navigator.push(
         //             context,
         //             MaterialPageRoute(builder: (context) => SecondScreen()),
@@ -106,8 +120,11 @@ class _HomeDashboardState extends State<HomeDashboard> {
                   children: [
                     const Homeappbar(),
                     Dimens.boxHeight15,
-                    const Searchcontainer(
+                    Searchcontainer(
                       text: "Searchinstore",
+                      onTap: () {
+                        Get.to(() => const SearchScreen());
+                      },
                       icon: Icons.search,
                     ),
                     Dimens.boxHeight20,

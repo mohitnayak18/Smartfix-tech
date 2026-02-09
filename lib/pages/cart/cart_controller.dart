@@ -72,14 +72,13 @@ class CartController extends GetxController {
 
   DocumentReference get appConfigRef =>
       _firestore.collection('app_config').doc('settings');
-        @override
+  @override
   void onInit() {
     super.onInit();
     _initializeController();
   }
 
-
-   String? get selectedAddressText {
+  String? get selectedAddressText {
     if (selectedAddress.isNotEmpty && selectedAddress.containsKey('address')) {
       return selectedAddress['address']?.toString();
     }
@@ -116,6 +115,19 @@ class CartController extends GetxController {
   bool get hasSelectedAddress => selectedAddress.isNotEmpty;
 
   // ==================== ADDRESS LOADING ====================
+  // bool isServiceInCart(String cartId) {
+  //   return cartItems.any((cartId) => cartId.id == cartId);
+  // }
+
+  // bool isServiceInCart(String serviceId, String serviceTitle, String brandName, String modelName, QueryDocumentSnapshot<Map<String, dynamic>>? product) {
+  //   return cartItems.any((item) =>
+  //    item.model == modelName &&
+  //     item.brand == brandName &&
+  //     item.cartId == serviceId &&
+  //     item.title == serviceTitle&&
+  //     item.price == product
+  //     );
+  // }
 
   Future<void> loadAddresses() async {
     try {
@@ -447,23 +459,22 @@ class CartController extends GetxController {
   // ==================== DISTANCE MANAGEMENT ====================
 
   Future<void> updateDistance(double distance) async {
-  distanceInKm.value = distance;
+    distanceInKm.value = distance;
 
-  if (selectedAddress.isEmpty) return;
+    if (selectedAddress.isEmpty) return;
 
-  // ⛔ DO NOT touch Firestore for current location
-  if (selectedAddress['type'] == 'current') {
-    selectedAddress['distance'] = distance;
-    selectedAddress.refresh();
-    return;
+    // ⛔ DO NOT touch Firestore for current location
+    if (selectedAddress['type'] == 'current') {
+      selectedAddress['distance'] = distance;
+      selectedAddress.refresh();
+      return;
+    }
+
+    await _updateAddressDistance(selectedAddress['id'], distance);
   }
 
-  await _updateAddressDistance(selectedAddress['id'], distance);
-}
-
-
   Future<void> _updateAddressDistance(String addressId, double distance) async {
-    // if (addressId == 'current') return; 
+    // if (addressId == 'current') return;
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) return;
@@ -571,16 +582,17 @@ class CartController extends GetxController {
 
     return display;
   }
+
   // ==================== INITIALIZATION ====================
-/// Used ONLY for "Current Location" (LOCAL, not Firestore)
-void setCurrentAddress(Map<String, dynamic> address) {
-  selectedAddress.value = address;
+  /// Used ONLY for "Current Location" (LOCAL, not Firestore)
+  void setCurrentAddress(Map<String, dynamic> address) {
+    selectedAddress.value = address;
 
-  final distance = address['distance'];
-  distanceInKm.value = distance is num ? distance.toDouble() : 0.0;
+    final distance = address['distance'];
+    distanceInKm.value = distance is num ? distance.toDouble() : 0.0;
 
-  log('📍 Current location set locally');
-}
+    log('📍 Current location set locally');
+  }
 
   Future<void> _initializeController() async {
     try {
@@ -698,6 +710,7 @@ void setCurrentAddress(Map<String, dynamic> address) {
           .doc(user.uid)
           .collection('cart')
           .get();
+
       // log("Cart : ${querySnapshot.docs.length} items");
       for (var doc in querySnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
@@ -732,6 +745,7 @@ void setCurrentAddress(Map<String, dynamic> address) {
     log("userid:${user.uid}");
     var uuid = Uuid();
     final cartId = uuid.v1();
+    // final String docId = product['productId'].toString();
 
     final docRef = _firestore
         .collection('users')
@@ -740,29 +754,37 @@ void setCurrentAddress(Map<String, dynamic> address) {
         .doc(cartId);
 
     try {
-      await docRef
-          .set({
-            'cartId': cartId,
-            'productId': product['id'],
-            'title': product['title'],
-            'brand': product['brand'],
-            'model': product['model'],
-            'price': product['price'],
-            'image': product['image'],
-            'quantity': product['quantity'],
-            // 'notes': product['notes'] ?? '',
-            'createdAt': FieldValue.serverTimestamp(),
-          })
-          .then((value) {
-            Get.to(() => const CartView());
-            
-            loadCartFromFirebase();
-          });
+      final docSnapshot = await docRef.get();
+
+      if (docSnapshot.exists) {
+        // Logic: If already in cart, just notify the user or increment
+        Get.snackbar("Notice", "Item quantity updated in cart");
+        await docRef.update({'quantity': FieldValue.increment(1)});
+      } else {
+        await docRef
+            .set({
+              'cartId': cartId,
+              // 'productId': id,
+              'title': product['title'],
+              'brand': product['brand'],
+              'model': product['model'],
+              'price': product['price'],
+              'image': product['image'],
+              'quantity': product['quantity'],
+              // 'notes': product['notes'] ?? '',
+              'createdAt': FieldValue.serverTimestamp(),
+            })
+            .then((value) {
+              Get.to(() => const CartView());
+
+              loadCartFromFirebase();
+            });
+      }
     } catch (e) {
       print("❌ Add to cart error: $e");
     }
   }
-  
+
   Future<void> clearCart() async {
     final user = _auth.currentUser;
     if (user == null) return;
@@ -812,163 +834,163 @@ void setCurrentAddress(Map<String, dynamic> address) {
     _calculateTotal();
     log('TOTAL = ${totalPrice.value}');
   }
- 
+
   void _calculateGST() {
-    final taxable = subtotal.value - discount.value + platformFee.value;
-    gstAmount.value = taxable > 0 ? taxable * gstPercentage.value / 100 : 0;
+    // final taxable = subtotal.value - discount.value + platformFee.value;
+    gstAmount.value = gstPercentage.value > 0 ? gstPercentage.value : 0;
   }
 
   void _calculateTotal() {
     totalPrice.value =
         subtotal.value -
-        discount.value +
-        platformFee.value +
-        shippingFee.value +
-        gstAmount.value;
+        (discount.value -
+            platformFee.value -
+            shippingFee.value -
+            gstAmount.value);
   }
-//   Future<bool> saveAddress({
-//     required String title,
-//     required String address,
-//     required String type,
-//     double? lat,
-//     double? lng,
-//     Map<String, dynamic>? fullAddress,
-//     String? note,
-//     String? contactPerson,
-//     String? contactPhone,
-//     String? placeId,
-//     bool setAsDefault = false,
-//     String? phone,
-//     double? distance,
-//   }) async {
-//     try {
-//       final user = _auth.currentUser;
-//       if (user == null) return false;
+  //   Future<bool> saveAddress({
+  //     required String title,
+  //     required String address,
+  //     required String type,
+  //     double? lat,
+  //     double? lng,
+  //     Map<String, dynamic>? fullAddress,
+  //     String? note,
+  //     String? contactPerson,
+  //     String? contactPhone,
+  //     String? placeId,
+  //     bool setAsDefault = false,
+  //     String? phone,
+  //     double? distance,
+  //   }) async {
+  //     try {
+  //       final user = _auth.currentUser;
+  //       if (user == null) return false;
 
-//       final addressId = DateTime.now().millisecondsSinceEpoch.toString();
-//       final addressData = {
-//         'id': addressId,
-//         'userId': user.uid,
-//         'userEmail': user.email ?? '',
-//         'title': title,
-//         'address': address,
-//         'type': type,
-//         'lat': lat,
-//         'lng': lng,
-//         'fullAddress': fullAddress ?? {},
-//         'note': note ?? '',
-//         'contactPerson': contactPerson ?? '',
-//         'contactPhone': contactPhone ?? '',
-//         'placeId': placeId ?? '',
-//         'isDefault': setAsDefault,
-//         'phone': phone ?? '',
-//         'distance': distance ?? 0.0,
-//         'createdAt': FieldValue.serverTimestamp(),
-//         'updatedAt': FieldValue.serverTimestamp(),
-//         'lastUsedAt': FieldValue.serverTimestamp(),
-//       };
+  //       final addressId = DateTime.now().millisecondsSinceEpoch.toString();
+  //       final addressData = {
+  //         'id': addressId,
+  //         'userId': user.uid,
+  //         'userEmail': user.email ?? '',
+  //         'title': title,
+  //         'address': address,
+  //         'type': type,
+  //         'lat': lat,
+  //         'lng': lng,
+  //         'fullAddress': fullAddress ?? {},
+  //         'note': note ?? '',
+  //         'contactPerson': contactPerson ?? '',
+  //         'contactPhone': contactPhone ?? '',
+  //         'placeId': placeId ?? '',
+  //         'isDefault': setAsDefault,
+  //         'phone': phone ?? '',
+  //         'distance': distance ?? 0.0,
+  //         'createdAt': FieldValue.serverTimestamp(),
+  //         'updatedAt': FieldValue.serverTimestamp(),
+  //         'lastUsedAt': FieldValue.serverTimestamp(),
+  //       };
 
-//       // If setting as default, update other addresses
-//       if (setAsDefault) {
-//         await _updateDefaultAddress(addressId);
-//       }
+  //       // If setting as default, update other addresses
+  //       if (setAsDefault) {
+  //         await _updateDefaultAddress(addressId);
+  //       }
 
-//       await addressesRef.doc(addressId).set(addressData);
-      
-//       // Add to local list
-//       addresses.insert(0, addressData);
-//       addresses.refresh();
-      
-//       // Select the new address
-//       await selectAddress(addressData);
-      
-//       log('✅ Address saved successfully: $title');
-//       return true;
-//     } catch (e) {
-//       log('❌ Error saving address: $e');
-//       Get.snackbar(
-//         'Error',
-//         'Failed to save address',
-//         backgroundColor: Colors.red,
-//         colorText: Colors.white,
-//       );
-//       return false;
-//     }
-//   }
- 
-//  Future<bool> updateAddress({
-//     required String addressId,
-//     required Map<String, dynamic> updates,
-//   }) async {
-//     try {
-//       final userId = _auth.currentUser?.uid;
-//       if (userId == null) return false;
+  //       await addressesRef.doc(addressId).set(addressData);
 
-//       final docRef = _firestore
-//           .collection('users')
-//           .doc(userId)
-//           .collection('addresses')
-//           .doc(addressId);
+  //       // Add to local list
+  //       addresses.insert(0, addressData);
+  //       addresses.refresh();
 
-//       // Check if document exists
-//       final docSnapshot = await docRef.get();
-//       final updateData = {
-//         ...updates,
-//         'updatedAt': FieldValue.serverTimestamp(),
-//       };
+  //       // Select the new address
+  //       await selectAddress(addressData);
 
-//       if (docSnapshot.exists) {
-//         await docRef.update(updateData);
-//         log('✅ Address updated: $addressId');
-//       } else {
-//         // Try to find in local list
-//         final existingAddress = addresses.firstWhere(
-//           (addr) => addr['id'] == addressId,
-//           orElse: () => {},
-//         );
-        
-//         if (existingAddress.isNotEmpty) {
-//           await docRef.set({
-//             ...existingAddress,
-//             ...updateData,
-//             'createdAt': FieldValue.serverTimestamp(),
-//           });
-//           log('✅ Address created: $addressId');
-//         } else {
-//           log('⚠️ Cannot create address: No existing data found');
-//           return false;
-//         }
-//       }
+  //       log('✅ Address saved successfully: $title');
+  //       return true;
+  //     } catch (e) {
+  //       log('❌ Error saving address: $e');
+  //       Get.snackbar(
+  //         'Error',
+  //         'Failed to save address',
+  //         backgroundColor: Colors.red,
+  //         colorText: Colors.white,
+  //       );
+  //       return false;
+  //     }
+  //   }
 
-//       // Update local list
-//       final index = addresses.indexWhere((addr) => addr['id'] == addressId);
-//       if (index != -1) {
-//         addresses[index] = {
-//           ...addresses[index],
-//           ...updates,
-//           'updatedAt': DateTime.now(),
-//         };
-//         addresses.refresh();
-//       }
+  //  Future<bool> updateAddress({
+  //     required String addressId,
+  //     required Map<String, dynamic> updates,
+  //   }) async {
+  //     try {
+  //       final userId = _auth.currentUser?.uid;
+  //       if (userId == null) return false;
 
-//       // Update selected address if it's the one being edited
-//       if (selectedAddress['id'] == addressId) {
-//         selectedAddress.value = {...selectedAddress, ...updates};
-//         selectedAddress.refresh();
-//       }
+  //       final docRef = _firestore
+  //           .collection('users')
+  //           .doc(userId)
+  //           .collection('addresses')
+  //           .doc(addressId);
 
-//       return true;
-//     } catch (e) {
-//       log('❌ Error updating address: $e');
-//       Get.snackbar(
-//         'Error',
-//         'Failed to update address',
-//         backgroundColor: Colors.red,
-//         colorText: Colors.white,
-//       );
-//       return false;
-//     }
-//   }
+  //       // Check if document exists
+  //       final docSnapshot = await docRef.get();
+  //       final updateData = {
+  //         ...updates,
+  //         'updatedAt': FieldValue.serverTimestamp(),
+  //       };
+
+  //       if (docSnapshot.exists) {
+  //         await docRef.update(updateData);
+  //         log('✅ Address updated: $addressId');
+  //       } else {
+  //         // Try to find in local list
+  //         final existingAddress = addresses.firstWhere(
+  //           (addr) => addr['id'] == addressId,
+  //           orElse: () => {},
+  //         );
+
+  //         if (existingAddress.isNotEmpty) {
+  //           await docRef.set({
+  //             ...existingAddress,
+  //             ...updateData,
+  //             'createdAt': FieldValue.serverTimestamp(),
+  //           });
+  //           log('✅ Address created: $addressId');
+  //         } else {
+  //           log('⚠️ Cannot create address: No existing data found');
+  //           return false;
+  //         }
+  //       }
+
+  //       // Update local list
+  //       final index = addresses.indexWhere((addr) => addr['id'] == addressId);
+  //       if (index != -1) {
+  //         addresses[index] = {
+  //           ...addresses[index],
+  //           ...updates,
+  //           'updatedAt': DateTime.now(),
+  //         };
+  //         addresses.refresh();
+  //       }
+
+  //       // Update selected address if it's the one being edited
+  //       if (selectedAddress['id'] == addressId) {
+  //         selectedAddress.value = {...selectedAddress, ...updates};
+  //         selectedAddress.refresh();
+  //       }
+
+  //       return true;
+  //     } catch (e) {
+  //       log('❌ Error updating address: $e');
+  //       Get.snackbar(
+  //         'Error',
+  //         'Failed to update address',
+  //         backgroundColor: Colors.red,
+  //         colorText: Colors.white,
+  //       );
+  //       return false;
+  //     }
+  //   }
 
   // Future<bool> setAddressAsDefault(String addressId) async {
   //   try {
@@ -992,7 +1014,7 @@ void setCurrentAddress(Map<String, dynamic> address) {
   //         });
   //       }
   //     }
-      
+
   //     await batch.commit();
 
   //     // Update local list
@@ -1039,32 +1061,32 @@ void setCurrentAddress(Map<String, dynamic> address) {
     }
   }
 
-  Future<void> loadSavedCart(String cartId) async {
-    try {
-      final doc = await savedCartsRef.doc(cartId).get();
-      if (!doc.exists) return;
+  // Future<void> loadSavedCart(String cartId) async {
+  //   try {
+  //     final doc = await savedCartsRef.doc(cartId).get();
+  //     if (!doc.exists) return;
 
-      final data = doc.data() as Map<String, dynamic>;
-      final items = data['items'] as List<dynamic>;
+  //     final data = doc.data() as Map<String, dynamic>;
+  //     final items = data['items'] as List<dynamic>;
 
-      // Clear current cart
-      // await clearCart();
+  //     // Clear current cart
+  //     // await clearCart();
 
-      // Add saved items to cart
-      for (var item in items) {
-        await addToCart(item as Map<String, dynamic>);
-      }
+  //     // Add saved items to cart
+  //     for (var item in items) {
+  //       await addToCart(item as Map<String, dynamic>);
+  //     }
 
-      Get.snackbar(
-        'Cart Loaded',
-        'Cart loaded successfully',
-        backgroundColor: Colors.teal,
-        colorText: Colors.white,
-      );
-    } catch (e) {
-      print('❌ Error loading saved cart: $e');
-    }
-  }
+  //     Get.snackbar(
+  //       'Cart Loaded',
+  //       'Cart loaded successfully',
+  //       backgroundColor: Colors.teal,
+  //       colorText: Colors.white,
+  //     );
+  //   } catch (e) {
+  //     print('❌ Error loading saved cart: $e');
+  //   }
+  // }
 
   int get totalItemCount =>
       cartItems.fold(0, (sum, item) => sum + item.qty.value);
@@ -1082,6 +1104,7 @@ void setCurrentAddress(Map<String, dynamic> address) {
       'total': totalPrice.value,
     };
   }
+
   // Real-time cart stream
   Stream<List<CartItem>> getCartStream() {
     final user = _auth.currentUser;
@@ -1102,7 +1125,8 @@ void setCurrentAddress(Map<String, dynamic> address) {
       }).toList();
     });
   }
- // Real-time addresses stream
+
+  // Real-time addresses stream
   Stream<List<Map<String, dynamic>>> getAddressesStream() {
     final user = _auth.currentUser;
     if (user == null) return Stream.value([]);

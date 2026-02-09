@@ -416,7 +416,7 @@ class ConnectHelper {
   Future<ResponseModel?> connectCall(
       {required String from, required String to}) async {
     return await apiHelper.makeRequest(
-      'https://${AppConstants.exotelAPI}:${AppConstants.exotelTOKEN}@${AppConstants.exotelSUBDOMAIN}/v1/Accounts/${AppConstants.exotelSID}/Calls/connect',
+      'https://${AppConstants.GAPI}:${AppConstants.exotelTOKEN}@${AppConstants.exotelSUBDOMAIN}/v1/Accounts/${AppConstants.exotelSID}/Calls/connect',
       Request.exotelCall,
       {
         'From': from,

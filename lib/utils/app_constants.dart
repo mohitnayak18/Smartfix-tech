@@ -19,7 +19,7 @@ abstract class AppConstants {
   static String name = 'name';
   static String mobile = 'mobile';
   static String profile = 'profile';
-  static String exotelAPI = 'e3aaf42a3c21f89adb7e768efb9265ccfebe4ed77d06c758';
+  static String GAPI = 'AIzaSyCipNHTns2IzWUpepl1zH-cOBAAaRq297s';
   static String exotelTOKEN = 'a0440ca8caf4b9ceba52770e04dec1274fe8c8c9ef867ae1';
   static String exotelSUBDOMAIN = 'api.exotel.com';
   static String exotelSID = 'sysart1';

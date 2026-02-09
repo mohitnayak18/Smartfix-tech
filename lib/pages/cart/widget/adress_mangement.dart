@@ -12,8 +12,8 @@ const GOOGLE_MAPS_API_KEY = 'AIzaSyCipNHTns2IzWUpepl1zH-cOBAAaRq297s';
 class LocationManagerPage extends StatefulWidget {
   final CartController cartCtrl = Get.find<CartController>();
   // final CartController cartCtrl;
-   LocationManagerPage({super.key});
-  
+  LocationManagerPage({super.key, required CartController cartCtrl});
+
   @override
   State<LocationManagerPage> createState() => _LocationManagerPageState();
 }
@@ -29,7 +29,8 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
   // Search State
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _contactPersonController = TextEditingController();
+  final TextEditingController _contactPersonController =
+      TextEditingController();
   final TextEditingController _contactPhoneController = TextEditingController();
   String _selectedType = 'home';
   bool _isDefaultAddress = false;
@@ -182,10 +183,12 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
         Placemark place = placemarks.first;
         _currentAddress.value = _formatAddress(place);
       } else {
-        _currentAddress.value = 'Location at ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
+        _currentAddress.value =
+            'Location at ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
       }
     } catch (e) {
-      _currentAddress.value = 'Location at ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
+      _currentAddress.value =
+          'Location at ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
     }
   }
 
@@ -200,7 +203,8 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     } else if (placemark.locality != null && placemark.locality!.isNotEmpty) {
       addressComponents.add(placemark.locality!);
     }
-    if (placemark.administrativeArea != null && placemark.administrativeArea!.isNotEmpty) {
+    if (placemark.administrativeArea != null &&
+        placemark.administrativeArea!.isNotEmpty) {
       addressComponents.add(placemark.administrativeArea!);
     }
     if (placemark.postalCode != null && placemark.postalCode!.isNotEmpty) {
@@ -210,7 +214,9 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
       addressComponents.add(placemark.country!);
     }
 
-    return addressComponents.isNotEmpty ? addressComponents.join(', ') : 'Unknown Location';
+    return addressComponents.isNotEmpty
+        ? addressComponents.join(', ')
+        : 'Unknown Location';
   }
 
   Future<void> _saveCurrentLocationToCart() async {
@@ -291,20 +297,24 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
           children: [
             Row(
               children: [
-                Obx(() => Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: _hasLocationPermission.value
-                        ? Colors.teal.withOpacity(0.1)
-                        : Colors.grey.withOpacity(0.1),
-                    shape: BoxShape.circle,
+                Obx(
+                  () => Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: _hasLocationPermission.value
+                          ? Colors.teal.withOpacity(0.1)
+                          : Colors.grey.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.my_location,
+                      size: 22,
+                      color: _hasLocationPermission.value
+                          ? Colors.teal
+                          : Colors.grey,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.my_location,
-                    size: 22,
-                    color: _hasLocationPermission.value ? Colors.teal : Colors.grey,
-                  ),
-                )),
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -321,18 +331,20 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Obx(() => Text(
-                        _hasLocationPermission.value
-                            ? (_currentAddress.value.isEmpty
-                                ? "Tap to detect your location"
-                                : "Tap to refresh location")
-                            : "Enable location access for accurate delivery",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                          height: 1.3,
+                      Obx(
+                        () => Text(
+                          _hasLocationPermission.value
+                              ? (_currentAddress.value.isEmpty
+                                    ? "Tap to detect your location"
+                                    : "Tap to refresh location")
+                              : "Enable location access for accurate delivery",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            height: 1.3,
+                          ),
                         ),
-                      )),
+                      ),
                     ],
                   ),
                 ),
@@ -465,10 +477,7 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  blurRadius: 8,
-                ),
+                BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 8),
               ],
             ),
             child: AddressAutocompleteTextField(
@@ -479,12 +488,16 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                 hintText: "Search area, street, or landmark...",
                 border: InputBorder.none,
                 prefixIcon: Icon(Icons.search, color: Colors.teal),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
               ),
               onSuggestionClick: (place) async {
                 await _handlePlaceSelection(place);
               },
-              buildItem: (suggestion, index) => _buildSuggestionItem(suggestion),
+              buildItem: (suggestion, index) =>
+                  _buildSuggestionItem(suggestion),
             ),
           ),
         ],
@@ -517,9 +530,9 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
 
   String _getSuggestionText(dynamic suggestion) {
     try {
-      return suggestion.description?.toString() ?? 
-             suggestion.formattedAddress?.toString() ?? 
-             suggestion.toString();
+      return suggestion.description?.toString() ??
+          suggestion.formattedAddress?.toString() ??
+          suggestion.toString();
     } catch (_) {
       return suggestion.toString();
     }
@@ -546,10 +559,10 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
 
   String? _getPlaceAddress(dynamic place) {
     return place.formattedAddress ??
-           place.streetAddress ??
-           place.name ??
-           place.vicinity ??
-           place.label;
+        place.streetAddress ??
+        place.name ??
+        place.vicinity ??
+        place.label;
   }
 
   void _clearControllers() {
@@ -607,7 +620,10 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                   setAsDefault: _isDefaultAddress,
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                child: const Text('Save Address', style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  'Save Address',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -778,27 +794,37 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     return Expanded(
       child: Obx(() {
         if (widget.cartCtrl.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Colors.teal));
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.teal),
+          );
         }
 
         if (widget.cartCtrl.addresses.isEmpty) {
           return _buildEmptyState();
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          itemCount: widget.cartCtrl.addresses.length,
-          itemBuilder: (context, index) {
-            final address = widget.cartCtrl.addresses[index];
-            final isSelected = widget.cartCtrl.selectedAddress['id'] == address['id'];
-            return _buildAddressItem(address, isSelected, index);
-          },
+        return SizedBox(
+          height: 200,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 0),
+            itemCount: widget.cartCtrl.addresses.length,
+            itemBuilder: (context, index) {
+              final address = widget.cartCtrl.addresses[index];
+              final isSelected =
+                  widget.cartCtrl.selectedAddress['id'] == address['id'];
+              return _buildAddressItem(address, isSelected, index);
+            },
+          ),
         );
       }),
     );
   }
 
-  Widget _buildAddressItem(Map<String, dynamic> address, bool isSelected, int index) {
+  Widget _buildAddressItem(
+    Map<String, dynamic> address,
+    bool isSelected,
+    int index,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -848,7 +874,9 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.teal.shade800 : Colors.black87,
+                              color: isSelected
+                                  ? Colors.teal.shade800
+                                  : Colors.black87,
                             ),
                           ),
                         ),
@@ -861,7 +889,10 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                     const SizedBox(height: 4),
                     Text(
                       address['address'],
-                      style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -869,7 +900,11 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.directions, size: 12, color: Colors.teal),
+                          const Icon(
+                            Icons.directions,
+                            size: 12,
+                            color: Colors.teal,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${address['distance'].toStringAsFixed(1)} km away',
@@ -883,9 +918,9 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                       Text(
                         'Note: ${address['note']}',
                         style: TextStyle(
-                          fontSize: 12, 
-                          color: Colors.grey.shade600, 
-                          fontStyle: FontStyle.italic
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                          fontStyle: FontStyle.italic,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1005,7 +1040,10 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
               ElevatedButton(
                 onPressed: () => _updateAddress(address['id']),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                child: const Text('Update', style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  'Update',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
@@ -1080,15 +1118,15 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.location_searching,
-            size: 60,
-            color: Colors.grey.shade300,
-          ),
+          Icon(Icons.location_searching, size: 60, color: Colors.grey.shade300),
           const SizedBox(height: 16),
           const Text(
             "No saved addresses",
-            style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           const SizedBox(height: 8),
           const Padding(
@@ -1126,7 +1164,10 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
           ElevatedButton(
             onPressed: () => Get.back(result: true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-            child: const Text('Allow Access', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Allow Access',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -1138,12 +1179,11 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     Get.dialog(
       AlertDialog(
         title: const Text('Location Services Required'),
-        content: const Text('Please enable location services to get your current address.'),
+        content: const Text(
+          'Please enable location services to get your current address.',
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
               Get.back();
@@ -1161,12 +1201,11 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
     Get.dialog(
       AlertDialog(
         title: const Text('Location Permission Required'),
-        content: const Text('Location permission has been permanently denied. Please enable it in app settings.'),
+        content: const Text(
+          'Location permission has been permanently denied. Please enable it in app settings.',
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
               Get.back();
@@ -1197,8 +1236,8 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildCurrentLocationCard(),
-            _buildSearchSection(),
+            // _buildCurrentLocationCard(),
+            // _buildSearchSection(),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1215,17 +1254,16 @@ class _LocationManagerPageState extends State<LocationManagerPage> {
                     ),
                   ),
                   const Spacer(),
-                  Obx(() => Text(
-                    '${widget.cartCtrl.addresses.length} addresses',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
+                  Obx(
+                    () => Text(
+                      '${widget.cartCtrl.addresses.length} addresses',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
-                  )),
+                  ),
                 ],
               ),
             ),
-            _buildAddressList(),
+            // _buildAddressList(),
           ],
         ),
       ),

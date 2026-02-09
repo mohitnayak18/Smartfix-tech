@@ -5,6 +5,9 @@
 ///
 /// Will be ignored for test since all are static values and would not change.
 abstract class AssetConstants {
+  static const loc = 'assets/images/loc.png';
+  static const pin = 'assets/icons/location_pin.svg';
+  static const locationIcon = 'assets/lottie/location.json';
   static const checkmark = 'assets/lottie/Checkmark.json';
   static const splashLogo = 'assets/images/logo.png';
   static const onboarding1 = 'assets/lottie/customer_service.json';

@@ -9,14 +9,18 @@ class OrderDetailsScreen extends StatelessWidget {
   final String orderId;
   final String orderNumber;
 
-  OrderDetailsScreen({super.key, required this.orderId, required this.orderNumber});
+  OrderDetailsScreen({
+    super.key,
+    required this.orderId,
+    required this.orderNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
     // Use Get.find to get the existing controller instance
     // final ProductController controller = Get.put(homeco());
     final OrderController orderCtrl = Get.put(OrderController());
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order Details'),
@@ -33,14 +37,14 @@ class OrderDetailsScreen extends StatelessWidget {
           onPressed: () => Get.offAll(HomeScreen()),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              orderCtrl.fetchOrderById(orderId);
-            },
-          ),
-        ],
+        // actions: [
+        // IconButton(
+        //   icon: const Icon(Icons.refresh),
+        //   onPressed: () {
+        //     orderCtrl.fetchOrderById(orderId);
+        //   },
+        // ),
+        // ],
       ),
       body: FutureBuilder<void>(
         future: _loadOrderDetails(orderCtrl),
@@ -152,6 +156,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildOrderSummaryCard(OrderModel order) {
     return Card(
+      color: Colors.white54,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -292,6 +297,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildTimelineSection(OrderModel order) {
     return Card(
+      color: Colors.white54,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -417,6 +423,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildItemsSection(OrderModel order) {
     return Card(
+      color: Colors.white54,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -524,6 +531,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildAddressSection(OrderModel order) {
     return Card(
+      color: Colors.white54,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -605,6 +613,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildPaymentSummary(OrderModel order) {
     return Card(
+      color: Colors.white54,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -799,8 +808,18 @@ class OrderDetailsScreen extends StatelessWidget {
               maxLines: 3,
               decoration: const InputDecoration(
                 hintText: 'Enter reason...',
-                
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  // borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(
+                    color: Colors.blueGrey,
+                    width: 1.2,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  // borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.teal, width: 1.6),
+                ),
+                // border: OutlineInputBorder(),
               ),
             ),
           ],
@@ -833,7 +852,10 @@ class OrderDetailsScreen extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Confirm Cancel'),
+            child: const Text(
+              'Confirm Cancel',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

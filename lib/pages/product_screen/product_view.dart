@@ -1,9 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:smartfixTech/api_calls/models/cart_model.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
-import 'package:smartfixTech/pages/cart/cart_view.dart';
 import 'package:smartfixTech/pages/product_screen/product_controller.dart';
 import 'package:smartfixTech/theme/dimens.dart';
 // import 'package:smartfixTech/pages/product_scren/product_controller.dart';
@@ -31,6 +31,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
   String brandImage = '';
   String serviceId = '';
   String serviceTitle = '';
+  String cartId = '';
   // String avgRating = '0.0';
   String brandId = '';
 
@@ -229,7 +230,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(15),
         ),
-        child:  Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.phone_iphone, size: 80, color: Colors.teal),
@@ -276,7 +277,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(15),
         ),
-        child:  Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.broken_image, size: 80, color: Colors.grey),
@@ -310,7 +311,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
             ),
           ),
           Dimens.boxWidth10,
-          
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,7 +473,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children:  [
+        children: [
           Text(
             "Available Offers",
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -491,7 +492,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children:  [
+        children: [
           Text("Highlights", style: TextStyle(fontWeight: FontWeight.bold)),
           Dimens.boxHeight8,
           Text("• Doorstep Repair"),
@@ -541,7 +542,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
                     ),
                   ),
                   // const SizedBox(height: 2),
-                   Text(
+                  Text(
                     "all taxes".tr,
                     style: TextStyle(
                       fontSize: 14,
@@ -573,20 +574,79 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
                     borderRadius: BorderRadius.circular(24),
                   ),
                 ),
-                onPressed: () {
-                  cartCtrl.addToCart({
-                    'productId': serviceId, // ✅ use serviceId
-                    'title': serviceTitle,
-                    'brand': brandName, // ✅ from args
-                    'model': modelName, // ✅ from args
-                    'price':
-                        double.tryParse(
-                          product?['discountPrice']?.toString() ?? '0',
-                        ) ??
-                        0,
-                    'image': serviceImageUrl,
-                    'quantity': 1,
-                  });
+                onPressed: () async {
+                  try {
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user == null) {
+                      Get.snackbar(
+                        "Login required",
+                        "Please login to add items to cart",
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                      return;
+                    }
+
+                    final cartRef = FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .collection('cart');
+
+                    final querySnapshot = await cartRef
+                        .where('productId', isEqualTo: serviceId)
+                        // optional extra safety
+                        .where('brand', isEqualTo: brandName)
+                        .where('model', isEqualTo: modelName)
+                        .limit(1)
+                        .get();
+
+                    // ❌ Already exists
+                    if (querySnapshot.docs.isEmpty) {
+                      Get.snackbar(
+                        "Already in cart",
+                        "$serviceTitle is already in your cart",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.orange,
+                        colorText: Colors.white,
+                      );
+                      return;
+                    }
+
+                    // ✅ Add to cart
+                    await cartCtrl.addToCart({
+                      'productId': serviceId,
+                      'title': serviceTitle,
+                      'brand': brandName,
+                      'model': modelName,
+                      'price':
+                          double.tryParse(
+                            product?['discountPrice']?.toString() ?? '0',
+                          ) ??
+                          0,
+                      'image': serviceImageUrl,
+                      'quantity': 1,
+                      'createdAt': FieldValue.serverTimestamp(),
+                    });
+
+                    Get.snackbar(
+                      "Added",
+                      "Item added to cart successfully",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+                  } on FirebaseException catch (e) {
+                    Get.snackbar(
+                      "Firebase Error",
+                      e.message ?? "Something went wrong",
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                  } catch (e) {
+                    Get.snackbar(
+                      "Error",
+                      e.toString(),
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                  }
                 },
 
                 // child: const Text(

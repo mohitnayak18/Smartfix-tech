@@ -129,6 +129,7 @@ class _ModelsViewState extends State<ModelsView> {
                     'serviceTitle': widget.serviceTitle,
                     'brandId': widget.brandId,
                   },
+                  
                 );
               },
               child: Container(

@@ -10,7 +10,7 @@ class SplashController extends GetxController {
 
   @override
   void onInit() {
-    Timer(const Duration(seconds: 8), () async {
+    Timer(const Duration(seconds: 5), () async {
       final accessKey =
           await _commonService.getValue(AppConstants.token) as String? ?? '';
 
