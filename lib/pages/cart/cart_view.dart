@@ -6,6 +6,7 @@ import 'package:smartfixTech/pages/cart/widget/adress_mangement.dart';
 import 'package:smartfixTech/pages/cart/widget/adress_widget.dart';
 import 'package:smartfixTech/pages/cart/widget/checkout_bar.dart';
 import 'package:smartfixTech/pages/cart/widget/save_adress.dart';
+import 'package:smartfixTech/pages/order/order.dart';
 
 // ==================== CONSTANTS & STYLES ====================
 const _appBarTitleStyle = TextStyle(
@@ -576,7 +577,7 @@ class CartView extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: AdressWidget(),
+        child: AddressWidget(),
       ),
     );
   }
@@ -665,8 +666,8 @@ class CartView extends StatelessWidget {
             ),
             child: Center(
               child: Icon(
-                Icons.shopping_basket_outlined,
-                size: 80,
+                Icons.shopping_cart_outlined,
+                size: 60,
                 color: Colors.teal.shade300,
               ),
             ),
@@ -712,7 +713,7 @@ class CartView extends StatelessWidget {
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.explore_rounded, size: 20),
+                  Icon(Icons.travel_explore_sharp, size: 20),
                   SizedBox(width: 10),
                   Text(
                     "Browse Services",
@@ -725,7 +726,7 @@ class CartView extends StatelessWidget {
           const SizedBox(height: 20),
           TextButton(
             onPressed: () {
-              // Get.to(() => OrderListScreen());
+              Get.to(() => OrdersListScreen());
               Get.snackbar(
                 "Coming Soon",
                 "Order history feature",

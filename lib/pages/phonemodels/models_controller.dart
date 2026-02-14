@@ -23,30 +23,30 @@ class ModelsController extends GetxController {
           .listen(
             (snapshot) {
               if (snapshot.docs.isEmpty) {
-                log('⚠️ No models found for brandId: $brandId');
+                // log('⚠️ No models found for brandId: $brandId');
                
 
                 // Debug: Check ALL models to see their structure
                 // _debugAllModels();
-                log('snapshot.docs: ${snapshot.docs}');
+                // log('snapshot.docs: ${snapshot.docs}');
               }
 
               models.value = snapshot.docs;
               _sortModelsAlphabetically();
               isLoading.value = false;
 
-              log('✅ Found ${models.length} models for brandId: $brandId');
+              // log('✅ Found ${models.length} models for brandId: $brandId');
             },
             onError: (error) {
               isLoading.value = false;
               this.error.value = 'Error: $error';
-              log('❌ Firestore error: $error');
+              // log('❌ Firestore error: $error');
             },
           );
     } catch (e) {
       isLoading.value = false;
       error.value = 'Exception: $e';
-      log('❌ Exception: $e');
+      // log('❌ Exception: $e');
     }
   }
 

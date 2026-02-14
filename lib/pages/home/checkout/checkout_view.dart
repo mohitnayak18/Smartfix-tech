@@ -416,7 +416,7 @@ class CheckoutView extends StatelessWidget {
                         Obx(() {
                           final location =
                               cartCtrl.selectedAddress['address'] ??
-                                  "No address selected";
+                              "No address selected";
                           return Text(
                             location,
                             style: const TextStyle(
@@ -768,7 +768,7 @@ class CheckoutView extends StatelessWidget {
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
+              decoration: BoxDecoration( 
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -1019,5 +1019,3 @@ class CheckoutView extends StatelessWidget {
     }
   }
 }
-
-// Order Success View Screen

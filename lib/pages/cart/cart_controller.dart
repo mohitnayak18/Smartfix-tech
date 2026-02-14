@@ -45,6 +45,9 @@ class CartController extends GetxController {
   final RxMap<String, dynamic> shippingConfig = <String, dynamic>{}.obs;
   final RxMap<String, dynamic> discountConfig = <String, dynamic>{}.obs;
 
+  String? modelId;
+  String? brandId;
+
   // Collection references
   CollectionReference get userRef {
     final userId = _auth.currentUser?.uid;
@@ -104,30 +107,7 @@ class CartController extends GetxController {
     return null;
   }
 
-  Map<String, dynamic>? getDefaultAddress() {
-    try {
-      return addresses.firstWhere((addr) => addr['isDefault'] == true);
-    } catch (e) {
-      return addresses.isNotEmpty ? addresses.first : null;
-    }
-  }
-
   bool get hasSelectedAddress => selectedAddress.isNotEmpty;
-
-  // ==================== ADDRESS LOADING ====================
-  // bool isServiceInCart(String cartId) {
-  //   return cartItems.any((cartId) => cartId.id == cartId);
-  // }
-
-  // bool isServiceInCart(String serviceId, String serviceTitle, String brandName, String modelName, QueryDocumentSnapshot<Map<String, dynamic>>? product) {
-  //   return cartItems.any((item) =>
-  //    item.model == modelName &&
-  //     item.brand == brandName &&
-  //     item.cartId == serviceId &&
-  //     item.title == serviceTitle&&
-  //     item.price == product
-  //     );
-  // }
 
   Future<void> loadAddresses() async {
     try {
@@ -233,13 +213,13 @@ class CartController extends GetxController {
       // Select the new address
       await selectAddress(addressData);
 
-      log('✅ Address saved successfully: $title');
-      Get.snackbar(
-        'Success',
-        'Address saved successfully',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      // log('✅ Address saved successfully: $title');
+      // Get.snackbar(
+      //   'Success',
+      //   'Address saved successfully',
+      //   backgroundColor: Colors.green,
+      //   colorText: Colors.white,
+      // );
       return true;
     } catch (e) {
       log('❌ Error saving address: $e');
@@ -317,8 +297,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Success',
         'Address updated successfully',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.black,
       );
       return true;
     } catch (e) {
@@ -418,8 +398,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Deleted',
         'Address removed successfully',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.black,
       );
       return true;
     } catch (e) {
@@ -753,36 +733,31 @@ class CartController extends GetxController {
         .collection('cart')
         .doc(cartId);
 
-    try {
-      final docSnapshot = await docRef.get();
+    await docRef
+        .set({
+          'cartId': cartId,
+          'serviceId': product['serviceId'],
+          'title': product['title'],
+          'brand': product['brand'],
+          'model': product['model'],
+          'price': product['price'],
+          'image': product['image'],
+          'brandId':product['brandId'],
+          'modelId': product['modelId'],
+          'quantity': product['quantity'],
+          // 'notes': product['notes'] ?? '',
+          'createdAt': FieldValue.serverTimestamp(),
+        })
+        .then((value) {
+          Get.to(() => const CartView());
 
-      if (docSnapshot.exists) {
-        // Logic: If already in cart, just notify the user or increment
-        Get.snackbar("Notice", "Item quantity updated in cart");
-        await docRef.update({'quantity': FieldValue.increment(1)});
-      } else {
-        await docRef
-            .set({
-              'cartId': cartId,
-              // 'productId': id,
-              'title': product['title'],
-              'brand': product['brand'],
-              'model': product['model'],
-              'price': product['price'],
-              'image': product['image'],
-              'quantity': product['quantity'],
-              // 'notes': product['notes'] ?? '',
-              'createdAt': FieldValue.serverTimestamp(),
-            })
-            .then((value) {
-              Get.to(() => const CartView());
-
-              loadCartFromFirebase();
-            });
-      }
-    } catch (e) {
-      print("❌ Add to cart error: $e");
-    }
+          loadCartFromFirebase();
+        });
+    // }
+    // }
+    // catch (e) {
+    //   print("❌ Add to cart error: $e");
+    // }
   }
 
   Future<void> clearCart() async {
@@ -812,9 +787,10 @@ class CartController extends GetxController {
 
       Get.snackbar(
         "Cleared",
-        "Cart cleared successfully",
-        backgroundColor: Colors.blue,
-        colorText: Colors.white,
+        "All cart cleared successfully",
+        backgroundColor: Colors.white,
+        colorText: Colors.black,
+        icon: Icon(Icons.phone_android_sharp),
       );
     } catch (e) {
       print("❌ Clear cart error: $e");
