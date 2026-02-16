@@ -532,137 +532,145 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
   }
 
   Widget _qualityCheckSection() {
-    return Obx(() {
-      final products = controller.products;
+  return Obx(() {
+    final products = controller.products;
+    
+    // Debug: Log current selected value and products
+    // log("Current selectedServiceId: ${selectedServiceId.value}");
+    // log("Products count: ${products.length}");
+    // for (var item in products) {
+    //   log("Product ID: ${item['id']}, Name: ${item['name']}");
+    // }
 
-      if (products.isEmpty) {
-        return const SizedBox();
-      }
+    if (products.isEmpty) {
+      return const SizedBox();
+    }
 
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                "Select you want",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.teal.shade800,
-                ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              "Select you want",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.teal.shade800,
               ),
             ),
-            Dimens.boxHeight8,
-            SizedBox(
-              height: 160,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final item = products[index];
-                  // Use serviceId if available, otherwise use id
-                  final serviceId = item['id'] ?? '';
-                  final isSelected = selectedServiceId.value == serviceId;
-
-                  return GestureDetector(
-                    onTap: () {
-                      log("Tapped on service: $serviceId");
-                      // Update the selected service ID
-                      selectedServiceId.value = serviceId;
-
-                      Get.snackbar(
-                        "Selected",
-                        "${item['name']} selected",
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.teal,
-                        colorText: Colors.white,
-                        duration: const Duration(seconds: 1),
-                      );
-                    },
-                    child: Container(
-                      width: 140,
-                      margin: const EdgeInsets.only(right: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
+          ),
+          Dimens.boxHeight8,
+          SizedBox(
+            height: 160,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final item = products[index];
+                // Use id from the product
+                final serviceId = item['id']?.toString() ?? '';
+                // Compare with selectedServiceId
+                final isSelected = selectedServiceId.value == serviceId;
+                return GestureDetector(
+                  onTap: () {
+                    // Update the selected service ID
+                    selectedServiceId.value = serviceId;
+                    
+                    // Force a rebuild by calling setState if needed
+                    // But Obx should handle this automatically
+                    
+                    Get.snackbar(
+                      "Selected",
+                      "${item['name']} selected",
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.teal,
+                      colorText: Colors.white,
+                      duration: const Duration(seconds: 1),
+                    );
+                  },
+                  child: Container(
+                    width: 140,
+                    margin: const EdgeInsets.only(right: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.teal
+                            : Colors.grey.shade200,
+                        width: isSelected ? 2 : 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
                           color: isSelected
-                              ? Colors.teal
-                              : Colors.grey.shade200,
-                          width: isSelected ? 2 : 1,
+                              ? Colors.teal.withOpacity(0.2)
+                              : Colors.grey.shade100,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: isSelected
-                                ? Colors.teal.withOpacity(0.2)
-                                : Colors.grey.shade100,
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Image.network(
+                              item['image'] ?? serviceImageUrl,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.image, size: 40),
+                            ),
                           ),
+                          Text(
+                            item['name'] ?? 'Service',
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Dimens.boxHeight4,
+                          Text(
+                            "₹${item['discountPrice']?.toString() ?? item['price']?.toString() ?? '0'}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? Colors.teal
+                                  : Colors.grey.shade700,
+                            ),
+                          ),
+                          if (isSelected)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Icon(
+                                Icons.check_circle,
+                                color: Colors.teal,
+                                size: 16,
+                              ),
+                            ),
                         ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Image.network(
-                                item['image'] ?? serviceImageUrl,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) =>
-                                    const Icon(Icons.image, size: 40),
-                              ),
-                            ),
-                            Text(
-                              item['name'] ?? 'Service',
-                              maxLines: 4,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Dimens.boxHeight4,
-                            Text(
-                              "₹${item['discountPrice']?.toString() ?? item['price']?.toString() ?? '0'}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? Colors.teal
-                                    : Colors.grey.shade700,
-                              ),
-                            ),
-                            if (isSelected)
-                              const Padding(
-                                padding: EdgeInsets.only(top: 4),
-                                child: Icon(
-                                  Icons.check_circle,
-                                  color: Colors.teal,
-                                  size: 16,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
-      );
-    });
-  }
-
+          ),
+        ],
+      ),
+    );
+  });
+}
   // Updated Highlights Section with Firebase integration
   Widget _highlightsSection() {
     return StreamBuilder<DocumentSnapshot>(

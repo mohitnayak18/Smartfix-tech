@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:smartfixTech/api_calls/models/order_model.dart';
 import 'package:smartfixTech/pages/home/home.dart';
 import 'package:smartfixTech/pages/order/order_controller.dart';
+import 'package:smartfixTech/theme/theme.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final String orderId;
@@ -104,7 +105,8 @@ class OrderDetailsScreen extends StatelessWidget {
             ),
             child: const Text('Go to Home'),
           ),
-          const SizedBox(height: 10),
+          // const SizedBox(height: 10),
+          Dimens.boxHeight10,
           ElevatedButton(
             onPressed: () => orderCtrl.fetchOrderById(orderId),
             style: ElevatedButton.styleFrom(
@@ -136,8 +138,8 @@ class OrderDetailsScreen extends StatelessWidget {
           ],
 
           // Items Section
-          _buildItemsSection(order),
-          const SizedBox(height: 16),
+          // _buildItemsSection(order),
+          // const SizedBox(height: 16),
 
           // Delivery Address
           _buildAddressSection(order),
@@ -156,7 +158,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildOrderSummaryCard(OrderModel order) {
     return Card(
-      color: Colors.white54,
+      color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -297,7 +299,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildTimelineSection(OrderModel order) {
     return Card(
-      color: Colors.white54,
+      color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -421,117 +423,117 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsSection(OrderModel order) {
-    return Card(
-      color: Colors.white54,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.shopping_bag, color: Colors.teal.shade700),
-                const SizedBox(width: 8),
-                const Text(
-                  'Order Items',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const Spacer(),
-                Text(
-                  order.itemCountText,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
+  // Widget _buildItemsSection(OrderModel order) {
+  //   return Card(
+  //     color: Colors.white,
+  //     elevation: 2,
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Row(
+  //             children: [
+  //               Icon(Icons.shopping_bag, color: Colors.teal.shade700),
+  //               const SizedBox(width: 8),
+  //               const Text(
+  //                 'Order Items',
+  //                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  //               ),
+  //               const Spacer(),
+  //               Text(
+  //                 order.items.toString(),
+  //                 style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+  //               ),
+  //             ],
+  //           ),
+  //           const SizedBox(height: 12),
 
-            Column(
-              children: order.items.map((item) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.teal.shade100,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(Icons.build, color: Colors.teal),
-                      ),
+  //           Column(
+  //             children: order.items.map((item) {
+  //               return Container(
+  //                 margin: const EdgeInsets.only(bottom: 12),
+  //                 padding: const EdgeInsets.all(12),
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.grey.shade50,
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //                 child: Row(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     Container(
+  //                       width: 60,
+  //                       height: 60,
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.teal.shade100,
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                       child: Icon(Icons.build, color: Colors.teal),
+  //                     ),
 
-                      const SizedBox(width: 12),
+  //                     const SizedBox(width: 12),
 
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.productName,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            if (item.serviceType != null)
-                              Text(
-                                item.serviceType!,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.teal.shade600,
-                                ),
-                              ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${item.quantity} x ${item.formattedPrice}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade700,
-                                  ),
-                                ),
-                                Text(
-                                  item.formattedTotal,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.teal,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  //                     Expanded(
+  //                       child: Column(
+  //                         crossAxisAlignment: CrossAxisAlignment.start,
+  //                         children: [
+  //                           Text(
+  //                             item.productName,
+  //                             style: const TextStyle(
+  //                               fontSize: 15,
+  //                               fontWeight: FontWeight.w600,
+  //                             ),
+  //                             maxLines: 2,
+  //                             overflow: TextOverflow.ellipsis,
+  //                           ),
+  //                           const SizedBox(height: 4),
+  //                           if (item.serviceType != null)
+  //                             Text(
+  //                               item.serviceType!,
+  //                               style: TextStyle(
+  //                                 fontSize: 13,
+  //                                 color: Colors.teal.shade600,
+  //                               ),
+  //                             ),
+  //                           const SizedBox(height: 8),
+  //                           Row(
+  //                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                             children: [
+  //                               Text(
+  //                                 '${item.quantity} x ${item.formattedPrice}',
+  //                                 style: TextStyle(
+  //                                   fontSize: 14,
+  //                                   color: Colors.grey.shade700,
+  //                                 ),
+  //                               ),
+  //                               Text(
+  //                                 item.formattedTotal,
+  //                                 style: const TextStyle(
+  //                                   fontSize: 16,
+  //                                   fontWeight: FontWeight.bold,
+  //                                   color: Colors.teal,
+  //                                 ),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               );
+  //             }).toList(),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildAddressSection(OrderModel order) {
     return Card(
-      color: Colors.white54,
+      color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -549,8 +551,8 @@ class OrderDetailsScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-
+            // const SizedBox(height: 12),
+            Dimens.boxHeight12,
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -573,7 +575,8 @@ class OrderDetailsScreen extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        // const SizedBox(height: 4),
+                        Dimens.boxHeight4,
                         Text(
                           order.address.address,
                           style: TextStyle(
@@ -581,7 +584,7 @@ class OrderDetailsScreen extends StatelessWidget {
                             color: Colors.grey.shade700,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        Dimens.boxHeight8,
                         Row(
                           children: [
                             Icon(
@@ -589,7 +592,7 @@ class OrderDetailsScreen extends StatelessWidget {
                               size: 16,
                               color: Colors.grey.shade600,
                             ),
-                            const SizedBox(width: 6),
+                            Dimens.boxWidth6,
                             Text(
                               order.phone,
                               style: TextStyle(
@@ -613,26 +616,28 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildPaymentSummary(OrderModel order) {
     return Card(
-      color: Colors.white54,
+      color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: Dimens.edgeInsets16,
+        // const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(Icons.payment, color: Colors.teal.shade700),
-                const SizedBox(width: 8),
+                Dimens.boxWidth8,
+                // const SizedBox(width: 8),
                 const Text(
                   'Payment Summary',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-
+            // const SizedBox(height: 12),
+            Dimens.boxHeight12,
             Column(
               children: [
                 _buildPaymentRow('Subtotal', order.subtotal),
@@ -655,8 +660,8 @@ class OrderDetailsScreen extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 12),
-
+            // const SizedBox(height: 12),
+            Dimens.boxHeight12,
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(

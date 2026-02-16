@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smartfixTech/api_calls/models/order_model.dart';
+import 'package:smartfixTech/pages/home/home_screen.dart';
 import 'package:smartfixTech/pages/order/order_details.dart';
 import 'package:smartfixTech/pages/order/order_controller.dart';
+import 'package:smartfixTech/theme/dimens.dart';
 
 class OrdersListScreen extends StatefulWidget {
   const OrdersListScreen({super.key});
@@ -51,12 +53,20 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyActions: true,
         title: const Text('My Orders'),
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          // height: 2.8,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: () async {
               await _loadOrders();
             },
@@ -84,7 +94,7 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
   }
 
   Widget _buildLoadingIndicator() {
-    return const Center(child: CircularProgressIndicator(color: Colors.teal));
+    return const Center(child: CircularProgressIndicator(color: Colors.white));
   }
 
   Widget _buildErrorView() {
@@ -155,12 +165,15 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
           ),
           const SizedBox(height: 30),
           ElevatedButton(
-            onPressed: () => Get.offAllNamed('/home'),
+            onPressed: () => Get.back(),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
             ),
-            child: const Text('Browse Services'),
+            child: Text(
+              'Browse Services',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
           ),
         ],
       ),
@@ -200,7 +213,7 @@ class OrderListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.teal.shade100,
+      color: Colors.teal.shade50,
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -267,8 +280,8 @@ class OrderListCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-
+              // const SizedBox(height: 10),
+              Dimens.boxHeight10,
               // Order date
               Row(
                 children: [
@@ -284,7 +297,8 @@ class OrderListCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              // const SizedBox(height: 8),
+              Dimens.boxHeight8,
 
               // Items count
               Text(

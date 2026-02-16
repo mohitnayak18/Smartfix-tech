@@ -810,7 +810,9 @@ class CartController extends GetxController {
     _calculateTotal();
     log('TOTAL = ${totalPrice.value}');
   }
-
+ void setSelectedAddress(Map<String, dynamic> address) {
+    selectedAddress.value = address;
+  }
   void _calculateGST() {
     // final taxable = subtotal.value - discount.value + platformFee.value;
     gstAmount.value = gstPercentage.value > 0 ? gstPercentage.value : 0;

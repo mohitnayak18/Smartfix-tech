@@ -87,7 +87,14 @@ class _ModelsViewState extends State<ModelsView> {
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => controller.fetchModels(widget.brandId),
-                  child: const Text('Retry'),
+                  child: Text(
+                    'Retry',
+                    style: TextStyle(
+                      color: Colors.black38,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 18,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -129,7 +136,6 @@ class _ModelsViewState extends State<ModelsView> {
                     'serviceTitle': widget.serviceTitle,
                     'brandId': widget.brandId,
                   },
-                  
                 );
               },
               child: Container(

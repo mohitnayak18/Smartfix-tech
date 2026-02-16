@@ -15,6 +15,7 @@ import 'package:smartfixTech/pages/home/widgets/hprimary_header_container.dart';
 import 'package:smartfixTech/pages/home/widgets/search_contanier.dart';
 import 'package:smartfixTech/pages/home/widgets/section_heading.dart';
 import 'package:smartfixTech/pages/home/widgets/vertical_image.dart';
+import 'package:smartfixTech/pages/store/store_screen.dart';
 import 'package:smartfixTech/theme/dimens.dart';
 
 class HomeDashboard extends StatefulWidget {
@@ -139,9 +140,11 @@ class _HomeDashboardState extends State<HomeDashboard> {
                             textColor: Colors.white,
                             showActionButton: false,
                           ),
-                          Dimens.boxHeight20,
+
+                          Dimens.boxHeight15,
                           SizedBox(
-                            height: 80, // Increased height to accommodate title
+                            height: Dimens
+                                .seventyEight, // Increased height to accommodate title
                             child: ListView.builder(
                               padding: EdgeInsets.only(right: 10),
                               shrinkWrap: true,
@@ -166,17 +169,17 @@ class _HomeDashboardState extends State<HomeDashboard> {
               child: Column(
                 children: [
                   BaneerView(),
-                  Dimens.boxHeight10,
+                  Dimens.boxHeight25,
                   Sectionheading(
                     textstyle: FontSize.larger.toString(),
                     title: 'recommended Products'.tr,
                     onPressed: () {
-                      print("See All pressed");
+                      Get.to(() => StoreScreen());
                     },
                     textColor: Colors.black,
                     showActionButton: false,
                   ),
-                  Dimens.boxHeight10,
+                  // Dimens.boxHeight,
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('service')

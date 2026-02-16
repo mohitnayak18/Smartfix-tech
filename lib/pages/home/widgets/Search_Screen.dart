@@ -1,9 +1,32 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:smartfixTech/pages/brands/brands.dart';
+import 'package:smartfixTech/pages/brands/brands_view.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({
+    super.key,
+    // required this.id,
+    // required this.title,
+    // required this.price,
+    // required this.orgprice,
+    // required this.cutPrice,
+    // required this.offer,
+    // required this.imageUrl,
+    // this.isVerified = true,
+  });
+
+  // final String id;
+  // final String title;
+  // final String price;
+  // final String orgprice;
+  // final String cutPrice;
+  // final String offer;
+  // final String imageUrl;
+  // final bool isVerified;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -152,7 +175,16 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         subtitle: Text("₹ ${data['priceto']}"),
                         onTap: () {
-                          // BrandsView(); // TODO: navigate to service details
+                          Get.to(
+                            () => BrandsView(
+                              serviceId:
+                                  results[index].id, // 🔥 correct document id
+                              serviceTitle: data['name'], // 🔥 correct name
+                              imageUrl: data['imageUrl'], // 🔥 correct image
+                            ),
+                            transition: Transition.rightToLeft,
+                            duration: const Duration(milliseconds: 300),
+                          );
                         },
                       ),
                     );

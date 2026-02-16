@@ -170,20 +170,20 @@ class ProfileScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
                   ),
                   const SizedBox(height: 6),
-                  GestureDetector(
-                    onTap: () {
-                      Dialog();
-                      // TODO: Navigate to Edit Profile Screen
-                    },
-                    child: Text(
-                      "Edit Profile",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Dialog();
+                  //     // TODO: Navigate to Edit Profile Screen
+                  //   },
+                  // child: Text(
+                  //   "Edit Profile",
+                  //   style: TextStyle(
+                  //     color: Theme.of(context).primaryColor,
+                  //     fontSize: 13,
+                  //     fontWeight: FontWeight.w500,
+                  //   ),
+                  // ),
+                  // ),
                 ],
               ),
             ),
@@ -206,10 +206,9 @@ class ProfileScreen extends StatelessWidget {
             // Get.toNamed('/OrderDetails',arguments: Order);
           }),
 
-          _quickItem(context, Icons.discount, "Coupons", () {
-            Get.snackbar("Coming Soon", "Coupons feature coming soon");
-          }),
-
+          // _quickItem(context, Icons.discount, "Coupons", () {
+          //   Get.snackbar("Coming Soon", "Coupons feature coming soon");
+          // }),
           _quickItem(context, Icons.help, "Help", () {
             Get.snackbar("Help", "Customer support coming soon");
           }),

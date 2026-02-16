@@ -60,6 +60,7 @@ abstract class Dimens {
   static double seventy = 70.sp;
   static double seventyFour = 74.sp;
   static double seventyFive = 75.sp;
+  static double seventyEight = 78.sp;
   static double eighty = 80.sp;
   static double eightyFive = 85.sp;
   static double eightySix = 86.sp;
@@ -175,12 +176,10 @@ abstract class Dimens {
   /// Get width percent [value].
   static double getWidthPercent(double value) => Get.width * value;
 
-  static SizedBox getBoxWidth(double value) => SizedBox(
-        width: getWidthPercent(value),
-      );
-  static SizedBox getBoxHeight(double value) => SizedBox(
-        height: getHeightPercent(value),
-      );
+  static SizedBox getBoxWidth(double value) =>
+      SizedBox(width: getWidthPercent(value));
+  static SizedBox getBoxHeight(double value) =>
+      SizedBox(height: getHeightPercent(value));
 
   /// Paddings
   static EdgeInsets edgeInsets0 = EdgeInsets.all(zero);
@@ -204,18 +203,10 @@ abstract class Dimens {
   static EdgeInsets edgeInsets50 = EdgeInsets.all(fifty);
   static EdgeInsets edgeInsets60 = EdgeInsets.all(sixty);
 
-  static EdgeInsets edgeInsets0_0_0_15 = EdgeInsets.only(
-    bottom: fifteen,
-  );
-  static EdgeInsets edgeInsets0_0_0_4 = EdgeInsets.only(
-    bottom: four,
-  );
-  static EdgeInsets edgeInsets0_0_0_5 = EdgeInsets.only(
-    bottom: five,
-  );
-  static EdgeInsets edgeInsets0_0_0_10 = EdgeInsets.only(
-    bottom: ten,
-  );
+  static EdgeInsets edgeInsets0_0_0_15 = EdgeInsets.only(bottom: fifteen);
+  static EdgeInsets edgeInsets0_0_0_4 = EdgeInsets.only(bottom: four);
+  static EdgeInsets edgeInsets0_0_0_5 = EdgeInsets.only(bottom: five);
+  static EdgeInsets edgeInsets0_0_0_10 = EdgeInsets.only(bottom: ten);
 
   static EdgeInsets edgeInsetsLeft15 = EdgeInsets.only(left: fifteen);
 
@@ -445,12 +436,7 @@ abstract class Dimens {
     eight,
   );
 
-  static EdgeInsets x = EdgeInsets.fromLTRB(
-    sixteen,
-    twentyFive,
-    sixteen,
-    zero,
-  );
+  static EdgeInsets x = EdgeInsets.fromLTRB(sixteen, twentyFive, sixteen, zero);
   static EdgeInsets edgeInsets16_35_16_0 = EdgeInsets.fromLTRB(
     sixteen,
     thirtyFive,
@@ -931,12 +917,7 @@ abstract class Dimens {
     zero,
   );
 
-  static EdgeInsets edgeInsets4 = EdgeInsets.fromLTRB(
-    six,
-    four,
-    six,
-    four,
-  );
+  static EdgeInsets edgeInsets4 = EdgeInsets.fromLTRB(six, four, six, four);
 
   static EdgeInsets edgeInsets00_04_04_04 = EdgeInsets.fromLTRB(
     zero,
@@ -1139,11 +1120,19 @@ abstract class Dimens {
     zero,
   );
 
-  static EdgeInsets edgeInsets0_5_20_5 =
-      EdgeInsets.fromLTRB(zero, five, twenty, five);
+  static EdgeInsets edgeInsets0_5_20_5 = EdgeInsets.fromLTRB(
+    zero,
+    five,
+    twenty,
+    five,
+  );
 
-  static EdgeInsets edgeInsets0_13_0_0 =
-      EdgeInsets.fromLTRB(zero, thirteen, zero, zero);
+  static EdgeInsets edgeInsets0_13_0_0 = EdgeInsets.fromLTRB(
+    zero,
+    thirteen,
+    zero,
+    zero,
+  );
 
   static EdgeInsets edgeInsets16_0 = EdgeInsets.symmetric(
     horizontal: sixteen,
@@ -1156,6 +1145,7 @@ abstract class Dimens {
   static SizedBox boxWidth3 = SizedBox(width: three);
   static SizedBox boxWidth4 = SizedBox(width: four);
   static SizedBox boxWidth5 = SizedBox(width: five);
+  static SizedBox boxWidth6 = SizedBox(width: six);
   static SizedBox boxWidth8 = SizedBox(width: eight);
   static SizedBox boxWidth10 = SizedBox(width: ten);
   static SizedBox boxWidth12 = SizedBox(width: twelve);

@@ -97,6 +97,8 @@ dependencies:
   google_places_flutter: ^2.1.1
   collection: ^1.19.1
   firebase_messaging: ^15.2.10
+  flutter_local_notifications: ^20.1.0
+  upgrader: ^12.5.0
 
 dev_dependencies:
   flutter_test:

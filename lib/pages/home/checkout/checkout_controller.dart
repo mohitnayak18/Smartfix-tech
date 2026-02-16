@@ -12,7 +12,8 @@ class CheckoutController extends GetxController {
   final TextEditingController phoneCtrl = TextEditingController();
   
   // State variables
-  bool useSavedAddress = true;
+  RxBool useSavedAddress = true.obs;
+
   String? selectedAddressId;
   
   // UUID instance
@@ -68,9 +69,9 @@ class CheckoutController extends GetxController {
   }
   
   void toggleAddressType() {
-    useSavedAddress = !useSavedAddress;
-    update();
-  }
+  useSavedAddress.value = !useSavedAddress.value;
+}
+
   
   void selectAddress(String addressId) {
     selectedAddressId = addressId;
@@ -112,7 +113,7 @@ class CheckoutController extends GetxController {
   }
   
   bool validateAddress() {
-    if (useSavedAddress) {
+    if (useSavedAddress == true) {
       return selectedAddressId != null;
     } else {
       return addressCtrl.text.trim().isNotEmpty;
@@ -121,7 +122,7 @@ class CheckoutController extends GetxController {
   
   // Get address data for order
   Map<String, dynamic> getAddressData() {
-    if (useSavedAddress && selectedAddressId != null) {
+    if (useSavedAddress == true && selectedAddressId != null) {
       final selectedAddress = cartCtrl.addresses.firstWhere(
         (addr) => addr['id'] == selectedAddressId,
       );

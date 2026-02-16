@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:smartfixTech/api_calls/services/notification_service.dart';
 import 'package:smartfixTech/utils/utils.dart';
+import 'package:upgrader/upgrader.dart';
 import 'api_calls/services/services.dart';
 import 'navigators/navigators.dart';
 import 'theme/app_theme.dart';
@@ -12,7 +14,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
+    // 🔥 FIRST initialize Firebase
     await Firebase.initializeApp();
+
+    // 🔥 THEN initialize notification service
+    await NotificationService.instance.initialize();
 
     await initializeServices();
 
@@ -40,19 +46,22 @@ class MyApp extends StatelessWidget {
       const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
     );
 
-    return ScreenUtilInit(
-      designSize: const Size(375, 745),
-      builder: (ctx, _) => GetMaterialApp(
-        locale: const Locale('en'),
-        title: 'SmartFix App',
-        debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.light,
-        getPages: AppPages.pages,
-        translations: TranslationFile(),
-        initialRoute: AppPages.initial,
-        theme: themeData(context),
-        enableLog: true,
-      ),
-    );
+ return ScreenUtilInit(
+  designSize: const Size(375, 745),
+  builder: (ctx, _) => UpgradeAlert(
+    child: GetMaterialApp(
+      locale: const Locale('en'),
+      title: 'SmartFix App',
+      debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.light,
+      getPages: AppPages.pages,
+      translations: TranslationFile(),
+      initialRoute: AppPages.initial,
+      theme: themeData(context),
+      enableLog: true,
+    ),
+  ),
+);
+
   }
 }
