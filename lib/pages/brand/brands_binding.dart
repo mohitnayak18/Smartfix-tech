@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:smartfixTech/pages/brands/brands_controller.dart';
+import 'package:smartfixTech/pages/brand/brands_controller.dart';
 
 class BrandsBinding extends Bindings {
   @override

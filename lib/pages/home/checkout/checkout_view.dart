@@ -2,14 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:smartfixTech/api_calls/models/order_model.dart';
-import 'package:smartfixTech/pages/Map_Location/Map_Location_screen.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
-import 'package:smartfixTech/pages/get_loaction.dart/get_location_screen.dart';
 import 'package:smartfixTech/pages/home/checkout/checkout_controller.dart';
 import 'package:smartfixTech/pages/home/checkout/confrom_order.dart';
 import 'package:smartfixTech/pages/order/order_controller.dart';
-import 'package:smartfixTech/theme/dimens.dart';
 import 'package:uuid/uuid.dart';
 
 class CheckoutView extends StatelessWidget {
@@ -24,36 +20,38 @@ class CheckoutView extends StatelessWidget {
       backgroundColor: Colors.grey.shade50,
       appBar: _buildAppBar(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              // Progress Tracker
-              _buildOrderProgress(),
+        child: Obx(() {
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                // Progress Tracker
+                _buildOrderProgress(),
 
-              // Delivery Info Card
-              _buildDeliveryInfoCard(checkoutCtrl),
+                // Delivery Info Card
+                _buildDeliveryInfoCard(checkoutCtrl),
 
-              // Address Section - FIXED: Now shows selected address from cart
-              _buildAddressSection(checkoutCtrl, cartCtrl),
+                // Address Section - Shows selected address from cart
+                _buildAddressSection(cartCtrl),
 
-              // Price Summary
-              _buildPriceSummary(cartCtrl),
+                // Price Summary with Icons
+                _buildPriceSummary(cartCtrl),
 
-              // Payment Mode
-              _buildPaymentSection(checkoutCtrl),
+                // Payment Mode
+                _buildPaymentSection(),
 
-              // Terms & Conditions
-              _buildTermsSection(),
+                // Terms & Conditions
+                _buildTermsSection(),
 
-              // Checkout Button
-              _buildCheckoutButton(checkoutCtrl, cartCtrl),
+                // Checkout Button
+                _buildCheckoutButton(checkoutCtrl, cartCtrl),
 
-              // Bottom padding
-              SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
-            ],
-          ),
-        ),
+                // Bottom padding
+                SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
@@ -77,7 +75,7 @@ class CheckoutView extends StatelessWidget {
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back, size: 26, color: Colors.white),
+        icon: const Icon(Icons.arrow_back_ios, size: 20),
         onPressed: () => Get.back(),
       ),
       actions: [
@@ -174,16 +172,77 @@ class CheckoutView extends StatelessWidget {
           ),
         ],
       ),
-      // padding: const EdgeInsets.all(16),
-      // margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.teal.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.delivery_dining,
+              size: 24,
+              color: Colors.teal.shade700,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Delivery by",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  checkoutCtrl.getDeliveryDate(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  size: 14,
+                  color: Colors.green.shade700,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  "Express",
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.green.shade700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  // FIXED: Address section now correctly shows selected address from cart
-  Widget _buildAddressSection(
-    CheckoutController checkoutCtrl,
-    CartController cartCtrl,
-  ) {
+  // Address section - Shows selected address from CartController
+  Widget _buildAddressSection(CartController cartCtrl) {
+    final selectedAddress = cartCtrl.selectedAddress;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -227,140 +286,53 @@ class CheckoutView extends StatelessWidget {
                     ),
                   ),
                 ),
-                _buildChangeAddressButton(checkoutCtrl, cartCtrl),
               ],
             ),
             const SizedBox(height: 16),
 
-            // Selected Address Display - Shows the address from cart
-            Obx(() {
-              final selectedAddress = cartCtrl.selectedAddress;
-
-              // Show selected address if it exists in cart
-              if (selectedAddress.isNotEmpty &&
-                  selectedAddress['address'] != null &&
-                  selectedAddress['address'].toString().isNotEmpty) {
-                // Show selected address from cart
-                //   return _buildSelectedAddressCard(...);
-                // }
-                // if (selectedAddress.isNotEmpty &&
-                //     selectedAddress['address'] != null &&
-                //     selectedAddress['address'].toString().isNotEmpty) {
-                // return _buildSelectedAddressCard(checkoutCtrl, {
-                // 'id': 'selected',
-                // 'title': selectedAddress['title'] ?? 'Delivery Address',
-                // 'selectedAddress': selectedAddress['address'] ?? '',
-                // 'lebel': selectedAddress['lebel'] ?? 'home',
-                //   'distance': selectedAddress['distance'],
-                // });
-                // return _buildSelectedAddressCard(checkoutCtrl, selectedAddress);
-              }
-
-              // If no address in cart, show manual input
-              return Column(
-                children: [
-                  _buildAddressInputField(checkoutCtrl),
-                  const SizedBox(height: 12),
-                  // _buildSearchAddressButton(checkoutCtrl),
-                ],
-              );
-            }),
-
-            const SizedBox(height: 16),
-
-            // Phone Input
-            _buildPhoneInputField(checkoutCtrl),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildChangeAddressButton(
-    CheckoutController checkoutCtrl,
-    CartController cartCtrl,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        Get.to(() => GetLocationScreen());
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.teal.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.edit_location, size: 14, color: Colors.teal.shade700),
-            const SizedBox(width: 4),
-            Text(
-              "CHANGE",
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.teal.shade700,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSelectedAddressCard(
-    CheckoutController checkoutCtrl,
-    Map<String, dynamic> selectedAddress,
-  ) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.teal.shade50, Colors.white],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.teal.shade200, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
+            // Display selected address from cart
+            if (selectedAddress.isNotEmpty && selectedAddress['address'] != null)
               Container(
-                padding: const EdgeInsets.all(8),
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.teal,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  checkoutCtrl.getAddressIcon(
-                    selectedAddress['lebel'] ?? 'home',
+                  gradient: LinearGradient(
+                    colors: [Colors.teal.shade50, Colors.white],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  size: 16,
-                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.teal.shade200, width: 1.5),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        // Text(
-                        //   selectedAddress['title'] ?? 'Delivery Address',
-                        //   style: const TextStyle(
-                        //     fontSize: 15,
-                        //     fontWeight: FontWeight.w700,
-                        //     color: Colors.black87,
-                        //   ),
-                        // ),
-                        // const SizedBox(width: 8),
-                        if (selectedAddress['lebel'] != null)
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.teal,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            _getAddressIcon(selectedAddress['type'] ?? 'home'),
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            selectedAddress['title'] ?? 'Delivery Address',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        if (selectedAddress['isDefault'] == true)
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -370,153 +342,159 @@ class CheckoutView extends StatelessWidget {
                               color: Colors.teal.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
-                              selectedAddress['lebel'].toString().toUpperCase(),
+                            child: const Text(
+                              "DEFAULT",
                               style: TextStyle(
                                 fontSize: 10,
+                                color: Colors.teal,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.teal.shade700,
                               ),
                             ),
                           ),
                       ],
                     ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            selectedAddress['address'] ?? '',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade800,
+                              height: 1.4,
+                            ),
+                          ),
+                          if (selectedAddress['distance'] != null) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.directions_bike,
+                                  size: 14,
+                                  color: Colors.teal.shade400,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${selectedAddress['distance'].toStringAsFixed(1)} km away',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.teal.shade600,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  selectedAddress['address'],
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade800,
-                    height: 1.4,
+              )
+            else
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: const Center(
+                  child: Text(
+                    "No address selected",
+                    style: TextStyle(color: Colors.grey),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddressInputField(CheckoutController checkoutCtrl) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: TextFormField(
-        controller: checkoutCtrl.addressCtrl,
-        maxLines: 3,
-        decoration: InputDecoration(
-          hintText: "Enter complete address with landmark",
-          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(12),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(bottom: 30),
-            child: Icon(Icons.location_on, color: Colors.teal.shade300),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Widget _buildSearchAddressButton(CheckoutController checkoutCtrl) {
-  //   return InkWell(
-  //     onTap: () =>
-  //         _showAddressSelectionSheet(checkoutCtrl, Get.find<CartController>()),
-  //     child: Container(
-  //       padding: const EdgeInsets.all(12),
-  //       decoration: BoxDecoration(
-  //         color: Colors.teal.withOpacity(0.05),
-  //         borderRadius: BorderRadius.circular(12),
-  //         border: Border.all(color: Colors.teal.withOpacity(0.2)),
-  //       ),
-  //       child: Row(
-  //         children: [
-  //           Icon(Icons.search, color: Colors.teal.shade700, size: 18),
-  //           const SizedBox(width: 8),
-  //           Expanded(
-  //             child: Text(
-  //               "Search or select from saved addresses",
-  //               style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-  //             ),
-  //           ),
-  //           Icon(
-  //             Icons.arrow_forward_ios,
-  //             color: Colors.teal.shade700,
-  //             size: 14,
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  Widget _buildPhoneInputField(CheckoutController checkoutCtrl) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Contact Number",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: TextFormField(
-            controller: checkoutCtrl.phoneCtrl,
-            keyboardType: TextInputType.phone,
-            maxLength: 10,
-            decoration: InputDecoration(
-              hintText: "Enter 10-digit mobile number",
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-              counterText: "",
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
               ),
-              prefixIcon: Icon(
-                Icons.phone,
-                color: Colors.teal.shade300,
-                size: 18,
-              ),
-              suffixIcon: checkoutCtrl.phoneCtrl.text.length == 10
-                  ? Icon(
-                      Icons.check_circle,
-                      color: Colors.green.shade400,
-                      size: 18,
-                    )
-                  : null,
-            ),
-            onChanged: (value) {
-              // Trigger UI update
-            },
-          ),
+
+            const SizedBox(height: 16),
+
+            // Phone Input
+            _buildPhoneInputField(),
+          ],
         ),
-      ],
+      ),
     );
   }
 
+  IconData _getAddressIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'home':
+        return Icons.home;
+      case 'work':
+        return Icons.work;
+      case 'other':
+        return Icons.location_on;
+      default:
+        return Icons.location_on;
+    }
+  }
+
+  Widget _buildPhoneInputField() {
+  final CheckoutController checkoutCtrl = Get.find<CheckoutController>();
+  
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        "Contact Number",
+        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      ),
+      const SizedBox(height: 8),
+      Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: TextFormField(
+          controller: checkoutCtrl.phoneCtrl,
+          keyboardType: TextInputType.phone,
+          maxLength: 10,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+          decoration: InputDecoration(
+            hintText: "Enter 10-digit mobile number",
+            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
+              
+            ),
+            focusColor: Colors.teal,
+            prefixIcon: Icon(
+              Icons.phone,
+              color: Colors.teal.shade300,
+              size: 18,
+            ),
+            suffixIcon: checkoutCtrl.phoneCtrl.text.length == 10
+                ? Icon(
+                    Icons.check_circle,
+                    color: Colors.green.shade400,
+                    size: 18,
+                  )
+                : null,
+          ),
+          onChanged: (value) {
+            // Force update to show/hide check icon
+            checkoutCtrl.phoneCtrl.text = value.trim();
+            checkoutCtrl.phoneCtrl.selection = TextSelection.fromPosition(
+              TextPosition(offset: checkoutCtrl.phoneCtrl.text.length),
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+  // Price Summary with Icons
   Widget _buildPriceSummary(CartController cartCtrl) {
     return Container(
       decoration: BoxDecoration(
@@ -545,7 +523,7 @@ class CheckoutView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
-                    Icons.receipt,
+                    Icons.receipt_long,
                     color: Colors.teal,
                     size: 18,
                   ),
@@ -569,111 +547,211 @@ class CheckoutView extends StatelessWidget {
                     color: Colors.green.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    "${cartCtrl.cartItems.length} ITEMS",
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.green.shade700,
-                    ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.shopping_bag,
+                        size: 12,
+                        color: Colors.green.shade700,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "${cartCtrl.cartItems.length} ITEMS",
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
 
-            // Price Breakdown
-            _buildPriceBreakdown(cartCtrl),
+            // Price Breakdown with Icons
+            _buildPriceRowWithIcon(
+              icon: Icons.shopping_cart_outlined,
+              label: "Total MRP",
+              value: cartCtrl.subtotal.value,
+            ),
+            const SizedBox(height: 10),
+            
+            _buildPriceRowWithIcon(
+              icon: Icons.discount_outlined,
+              label: "Discount",
+              value: -cartCtrl.discount.value,
+              isDiscount: true,
+            ),
+            const SizedBox(height: 10),
+            
+            _buildPriceRowWithIcon(
+              icon: Icons.devices,
+              label: "Platform Fee",
+              value: cartCtrl.platformFee.value,
+            ),
+            const SizedBox(height: 10),
+            
+            _buildPriceRowWithIcon(
+              icon: Icons.delivery_dining,
+              label: "Shipping Fee",
+              value: cartCtrl.shippingFee.value,
+              showFree: cartCtrl.shippingFee.value == 0,
+            ),
+            
+            if (cartCtrl.gstAmount.value > 0) ...[
+              const SizedBox(height: 10),
+              _buildPriceRowWithIcon(
+                icon: Icons.receipt,
+                label: "GST & Taxes",
+                value: cartCtrl.gstAmount.value,
+              ),
+            ],
 
             const Divider(height: 24),
 
-            // Total
-            _buildTotalRow(cartCtrl),
+            // Total with Icon
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.teal,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.payments,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Total Amount",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "Inclusive of all taxes",
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    "₹${NumberFormat('#,##0').format(cartCtrl.totalPrice.value)}",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: Colors.teal.shade700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
-            // Savings
-            if (cartCtrl.discount.value > 0) _buildSavingsBanner(cartCtrl),
+            // Savings Banner
+            if (cartCtrl.discount.value > 0)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.green.shade50, Colors.teal.shade50],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.green.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.savings,
+                        color: Colors.green.shade700,
+                        size: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "You save ₹${NumberFormat('#,##0').format(cartCtrl.discount.value)} on this order!",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPriceBreakdown(CartController cartCtrl) {
-    return Column(
-      children: [
-        _buildPriceRow(
-          "Total MRP",
-          cartCtrl.subtotal.value,
-          icon: Icons.shopping_bag_outlined,
-        ),
-        const SizedBox(height: 10),
-        _buildPriceRow(
-          "Platform Fee",
-          cartCtrl.platformFee.value,
-          icon: Icons.devices,
-          showDiscount: true,
-        ),
-        const SizedBox(height: 10),
-        _buildPriceRow(
-          "Shipping Fee",
-          cartCtrl.shippingFee.value,
-          icon: Icons.delivery_dining,
-          showDiscount: cartCtrl.shippingFee.value == 0,
-          discountText: cartCtrl.shippingFee.value == 0 ? "Free" : null,
-        ),
-        if (cartCtrl.gstAmount.value > 0) ...[
-          const SizedBox(height: 10),
-          _buildPriceRow(
-            "GST & Taxes",
-            cartCtrl.gstAmount.value,
-            icon: Icons.receipt_outlined,
-          ),
-        ],
-        const SizedBox(height: 10),
-        _buildPriceRow(
-          "Discount",
-          -cartCtrl.discount.value,
-          icon: Icons.local_offer_outlined,
-          isDiscount: true,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPriceRow(
-    String label,
-    double value, {
-    IconData? icon,
+  Widget _buildPriceRowWithIcon({
+    required IconData icon,
+    required String label,
+    required double value,
     bool isDiscount = false,
-    bool showDiscount = false,
-    String? discountText,
+    bool showFree = false,
   }) {
     return Row(
       children: [
-        if (icon != null) ...[
-          Icon(icon, size: 16, color: Colors.grey.shade500),
-          const SizedBox(width: 8),
-        ],
+        Icon(
+          icon,
+          size: 16,
+          color: isDiscount ? Colors.green.shade600 : Colors.grey.shade500,
+        ),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(
             label,
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade700,
+            ),
           ),
         ),
-        if (showDiscount && discountText != null)
+        if (showFree)
           Container(
             margin: const EdgeInsets.only(right: 8),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: Colors.green.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              discountText,
+              "FREE",
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: Colors.green.shade700,
               ),
@@ -695,97 +773,7 @@ class CheckoutView extends StatelessWidget {
     );
   }
 
-  Widget _buildTotalRow(CartController cartCtrl) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Total Amount",
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              "Inclusive of all taxes",
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-            ),
-          ],
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.teal.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            "₹${NumberFormat('#,##0').format(cartCtrl.totalPrice.value)}",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-              color: Colors.teal.shade700,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSavingsBanner(CartController cartCtrl) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green.shade50, Colors.teal.shade50],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.green.shade200),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.green.shade100,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.savings, color: Colors.green.shade700, size: 16),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "You're saving big!",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.green.shade800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  "Save ₹${NumberFormat('#,##0').format(cartCtrl.discount.value)} on this order",
-                  style: TextStyle(fontSize: 12, color: Colors.green.shade600),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.celebration, color: Colors.amber),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentSection(CheckoutController checkoutCtrl) {
+  Widget _buildPaymentSection() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -954,72 +942,6 @@ class CheckoutView extends StatelessWidget {
                 ],
               ),
             ),
-            Dimens.boxHeight12,
-            Container(
-               child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.teal.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.delivery_dining,
-              size: 24,
-              color: Colors.teal.shade700,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Delivery by",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  checkoutCtrl.getDeliveryDate(),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 14,
-                  color: Colors.green.shade700,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  "Express",
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.green.shade700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-            )
-            
           ],
         ),
       ),
@@ -1033,7 +955,7 @@ class CheckoutView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Icon(Icons.check_circle, size: 16, color: Colors.teal.shade300),
+          Icon(Icons.check_circle_outline, size: 16, color: Colors.teal.shade300),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -1173,8 +1095,8 @@ class CheckoutView extends StatelessWidget {
       Get.snackbar(
         "Invalid Phone Number",
         "Please enter a valid 10-digit mobile number",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.red,
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 3),
         margin: const EdgeInsets.all(16),
@@ -1185,13 +1107,12 @@ class CheckoutView extends StatelessWidget {
     }
 
     // Validate address
-    if (cartCtrl.selectedAddress.isEmpty ||
-        cartCtrl.selectedAddress['address'] == null) {
+    if (cartCtrl.selectedAddress.isEmpty) {
       Get.snackbar(
         "Address Required",
         "Please select a delivery address",
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.black,
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 3),
         margin: const EdgeInsets.all(16),
@@ -1217,16 +1138,16 @@ class CheckoutView extends StatelessWidget {
       };
 
       // Show processing message
-      Get.snackbar(
-        "Processing Order",
-        "Please wait while we place your order...",
-        backgroundColor: Colors.blue,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      // Get.snackbar(
+      //   "Processing Order",
+      //   "Please wait while we place your order...",
+      //   backgroundColor: Colors.blue,
+      //   colorText: Colors.white,
+      //   snackPosition: SnackPosition.BOTTOM,
+      //   duration: const Duration(seconds: 2),
+      //   margin: const EdgeInsets.all(16),
+      //   borderRadius: 12,
+      // );
 
       // Create order
       final result = await orderCtrl.createOrderFromCart(
@@ -1255,12 +1176,11 @@ class CheckoutView extends StatelessWidget {
           ),
         );
 
-        // Show success message
         Get.snackbar(
           "Order Placed Successfully!",
           "Your order #${result['orderNumber']} has been confirmed",
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
+          backgroundColor: Colors.white,
+          colorText: Colors.black,
           duration: const Duration(seconds: 4),
           margin: const EdgeInsets.all(16),
           borderRadius: 12,
@@ -1270,8 +1190,8 @@ class CheckoutView extends StatelessWidget {
         Get.snackbar(
           "Order Failed",
           result['error'] ?? "Something went wrong. Please try again.",
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+          backgroundColor: Colors.white,
+          colorText: Colors.red,
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 4),
           margin: const EdgeInsets.all(16),
@@ -1306,20 +1226,6 @@ class CheckoutView extends StatelessWidget {
         const uuid = Uuid();
         final guestId = 'guest_${uuid.v4().substring(0, 8)}';
         print('No authenticated user, using guest ID: $guestId');
-
-        // Show guest mode message
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Get.snackbar(
-            "Guest Mode",
-            "You're placing order as a guest. Sign in to track orders easily.",
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
-            duration: const Duration(seconds: 3),
-            margin: const EdgeInsets.all(16),
-            borderRadius: 12,
-          );
-        });
-
         return guestId;
       }
     } catch (e) {

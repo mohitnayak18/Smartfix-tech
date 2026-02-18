@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
-import 'package:smartfixTech/pages/brands/brands.dart';
-import 'package:smartfixTech/pages/brands/brands_view.dart';
+import 'package:smartfixTech/pages/brand/brands.dart';
+import 'package:smartfixTech/pages/brand/brands_view.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
-import 'package:smartfixTech/pages/cart/widget/adress_mangement.dart';
+
 import 'package:smartfixTech/pages/cart/widget/adress_widget.dart';
 import 'package:smartfixTech/pages/cart/widget/checkout_bar.dart';
-import 'package:smartfixTech/pages/cart/widget/save_adress.dart';
 import 'package:smartfixTech/pages/order/order.dart';
 
 // ==================== CONSTANTS & STYLES ====================
@@ -124,8 +123,8 @@ class CartView extends StatelessWidget {
                 Get.snackbar(
                   'Refresh Failed',
                   'Unable to refresh cart',
-                  backgroundColor: Colors.red,
-                  colorText: Colors.white,
+                  backgroundColor: Colors.white,
+                  colorText: Colors.red,
                 );
               }
             },
@@ -727,12 +726,6 @@ class CartView extends StatelessWidget {
           TextButton(
             onPressed: () {
               Get.to(() => OrdersListScreen());
-              Get.snackbar(
-                "Coming Soon",
-                "Order history feature",
-                backgroundColor: Colors.teal,
-                colorText: Colors.white,
-              );
             },
             child: Text(
               "View Order History",
@@ -817,14 +810,15 @@ class CartView extends StatelessWidget {
                         Get.snackbar(
                           "Item Removed",
                           "Item has been removed from cart",
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
+                          backgroundColor: Colors.white,
+                          colorText: Colors.red,
                           borderRadius: 12,
                           duration: const Duration(seconds: 2),
                           icon: const Icon(
                             Icons.check_circle,
                             color: Colors.white,
                           ),
+                          
                         );
                       },
                       style: ElevatedButton.styleFrom(

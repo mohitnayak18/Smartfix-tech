@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
-import 'package:smartfixTech/pages/brands/brands.dart';
+import 'package:smartfixTech/pages/brand/brands.dart';
 import 'package:smartfixTech/pages/home/navigation_pages/home/product/product_vertical.dart';
 import 'package:smartfixTech/pages/home/navigation_pages/home/widgets/home_appbar.dart';
 import 'package:smartfixTech/pages/home/widgets/Search_Screen.dart';

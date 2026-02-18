@@ -53,7 +53,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
 
     // Add listener to debug changes
     ever(selectedServiceId, (value) {
-      log("Selected service changed to: $value");
+      // log("Selected service changed to: $value");
     });
 
     // Fetch products after build
@@ -69,10 +69,10 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
   void _initializeArgs() {
     serviceImageUrl = args["productImageUrl"] ?? '';
     modelId = args["modelId"] ?? '';
-    log('model:$modelId');
+    // log('model:$modelId');
     brandName = args["brandName"] ?? 'Brand';
     brandId = args["brandId"] ?? '';
-    log(brandId);
+    // log(brandId);
     modelName = args["modelName"] ?? 'Model';
     brandImage = args["brandImage"] ?? '';
     serviceTitle = args["serviceTitle"] ?? 'service';
@@ -531,19 +531,22 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
     );
   }
 
-  Widget _qualityCheckSection() {
+Widget _qualityCheckSection() {
   return Obx(() {
     final products = controller.products;
-    
-    // Debug: Log current selected value and products
-    // log("Current selectedServiceId: ${selectedServiceId.value}");
-    // log("Products count: ${products.length}");
-    // for (var item in products) {
-    //   log("Product ID: ${item['id']}, Name: ${item['name']}");
-    // }
 
     if (products.isEmpty) {
       return const SizedBox();
+    }
+
+    // If no product is selected yet, select the first one by default
+    if (selectedServiceId.value.isEmpty && products.isNotEmpty) {
+      // Use a microtask to avoid setState during build
+      Future.microtask(() {
+        if (mounted) {
+          selectedServiceId.value = products.first['id']?.toString() ?? '';
+        }
+      });
     }
 
     return Padding(
@@ -554,7 +557,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
-              "Select you want",
+              "Select your related itmes".tr,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -571,26 +574,28 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
               itemCount: products.length,
               itemBuilder: (context, index) {
                 final item = products[index];
-                // Use id from the product
-                final serviceId = item['id']?.toString() ?? '';
+                // Get the ID - try different possible keys
+                final serviceId = item['id']?.toString() ?? 
+                                 item['serviceId']?.toString() ?? 
+                                 item['documentId']?.toString() ?? '';
+                
                 // Compare with selectedServiceId
                 final isSelected = selectedServiceId.value == serviceId;
+
                 return GestureDetector(
                   onTap: () {
+                    // log("Tapped on service: $serviceId");
                     // Update the selected service ID
                     selectedServiceId.value = serviceId;
                     
-                    // Force a rebuild by calling setState if needed
-                    // But Obx should handle this automatically
-                    
-                    Get.snackbar(
-                      "Selected",
-                      "${item['name']} selected",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.teal,
-                      colorText: Colors.white,
-                      duration: const Duration(seconds: 1),
-                    );
+                    // Get.snackbar(
+                    //   "Selected",
+                    //   "${item['name']} selected",
+                    //   snackPosition: SnackPosition.BOTTOM,
+                    //   backgroundColor: Colors.teal,
+                    //   colorText: Colors.white,
+                    //   duration: const Duration(seconds: 1),
+                    // );
                   },
                   child: Container(
                     width: 140,
@@ -650,13 +655,9 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
                             ),
                           ),
                           if (isSelected)
-                            const Padding(
+                             Padding(
                               padding: EdgeInsets.only(top: 4),
-                              child: Icon(
-                                Icons.check_circle,
-                                color: Colors.teal,
-                                size: 16,
-                              ),
+                              child:Text('Selected'.tr),
                             ),
                         ],
                       ),
@@ -671,6 +672,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
     );
   });
 }
+
   // Updated Highlights Section with Firebase integration
   Widget _highlightsSection() {
     return StreamBuilder<DocumentSnapshot>(
@@ -844,7 +846,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
   }
 
   Future<void> _addToCart() async {
-    log('brand:$brandId');
+    // log('brand:$brandId');
     try {
       final user = FirebaseAuth.instance.currentUser;
       // if (user == null) {
@@ -880,10 +882,8 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
           // .limit(1)
           .get();
 
-     
-      log(querySnapshot.docs.toString());
+      // log(querySnapshot.docs.toString());
       if (querySnapshot.docs.isNotEmpty) {
-    
         _showSnackbar(
           "Already in cart",
           "$serviceTitle is already in your cart",
@@ -908,15 +908,15 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
         'quantity': 1,
       });
 
-      _showSnackbar("Added", "Item added to cart successfully", Colors.green);
+      // _showSnackbar("Added", "Item added to cart successfully", Colors.green);
     } on FirebaseException catch (e) {
       _showSnackbar(
         "Firebase Error",
         e.message ?? "Something went wrong",
-        Colors.red,
+        Colors.white,
       );
     } catch (e) {
-      _showSnackbar("Error", e.toString(), Colors.red);
+      // _showSnackbar("Error", e.toString(), Colors.red);
     }
   }
 
@@ -926,7 +926,7 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
       message,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: color,
-      colorText: Colors.white,
+      colorText: Colors.black,
       duration: const Duration(seconds: 2),
     );
   }

@@ -149,8 +149,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to load addresses',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.red,
       );
     }
   }
@@ -226,8 +226,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to save address',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.red,
       );
       return false;
     }
@@ -306,8 +306,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to update address',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.red,
       );
       return false;
     }
@@ -353,8 +353,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Success',
         'Default address updated',
-        backgroundColor: Colors.teal,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.black,
       );
       return true;
     } catch (e) {
@@ -407,8 +407,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to delete address',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.red,
       );
       return false;
     }
@@ -429,9 +429,9 @@ class CartController extends GetxController {
         await _updateAddressLastUsed(address['id']);
       }
 
-      log('✅ Address selected: ${address['title']}');
+      // log('✅ Address selected: ${address['title']}');
     } catch (e) {
-      log('❌ Error selecting address: $e');
+      // log('❌ Error selecting address: $e');
       rethrow;
     }
   }
@@ -664,8 +664,8 @@ class CartController extends GetxController {
       Get.snackbar(
         'Removed',
         'Item removed from cart',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.black,
       );
     } catch (e) {
       print('❌ Remove item error: $e');
@@ -785,13 +785,13 @@ class CartController extends GetxController {
       cartItems.clear();
       calculateTotals();
 
-      Get.snackbar(
-        "Cleared",
-        "All cart cleared successfully",
-        backgroundColor: Colors.white,
-        colorText: Colors.black,
-        icon: Icon(Icons.phone_android_sharp),
-      );
+      // Get.snackbar(
+      //   "Cleared",
+      //   "All cart cleared successfully",
+      //   backgroundColor: Colors.white,
+      //   colorText: Colors.black,
+      //   icon: Icon(Icons.phone_android_sharp),
+      // );
     } catch (e) {
       print("❌ Clear cart error: $e");
     }
@@ -826,246 +826,7 @@ class CartController extends GetxController {
             shippingFee.value -
             gstAmount.value);
   }
-  //   Future<bool> saveAddress({
-  //     required String title,
-  //     required String address,
-  //     required String type,
-  //     double? lat,
-  //     double? lng,
-  //     Map<String, dynamic>? fullAddress,
-  //     String? note,
-  //     String? contactPerson,
-  //     String? contactPhone,
-  //     String? placeId,
-  //     bool setAsDefault = false,
-  //     String? phone,
-  //     double? distance,
-  //   }) async {
-  //     try {
-  //       final user = _auth.currentUser;
-  //       if (user == null) return false;
-
-  //       final addressId = DateTime.now().millisecondsSinceEpoch.toString();
-  //       final addressData = {
-  //         'id': addressId,
-  //         'userId': user.uid,
-  //         'userEmail': user.email ?? '',
-  //         'title': title,
-  //         'address': address,
-  //         'type': type,
-  //         'lat': lat,
-  //         'lng': lng,
-  //         'fullAddress': fullAddress ?? {},
-  //         'note': note ?? '',
-  //         'contactPerson': contactPerson ?? '',
-  //         'contactPhone': contactPhone ?? '',
-  //         'placeId': placeId ?? '',
-  //         'isDefault': setAsDefault,
-  //         'phone': phone ?? '',
-  //         'distance': distance ?? 0.0,
-  //         'createdAt': FieldValue.serverTimestamp(),
-  //         'updatedAt': FieldValue.serverTimestamp(),
-  //         'lastUsedAt': FieldValue.serverTimestamp(),
-  //       };
-
-  //       // If setting as default, update other addresses
-  //       if (setAsDefault) {
-  //         await _updateDefaultAddress(addressId);
-  //       }
-
-  //       await addressesRef.doc(addressId).set(addressData);
-
-  //       // Add to local list
-  //       addresses.insert(0, addressData);
-  //       addresses.refresh();
-
-  //       // Select the new address
-  //       await selectAddress(addressData);
-
-  //       log('✅ Address saved successfully: $title');
-  //       return true;
-  //     } catch (e) {
-  //       log('❌ Error saving address: $e');
-  //       Get.snackbar(
-  //         'Error',
-  //         'Failed to save address',
-  //         backgroundColor: Colors.red,
-  //         colorText: Colors.white,
-  //       );
-  //       return false;
-  //     }
-  //   }
-
-  //  Future<bool> updateAddress({
-  //     required String addressId,
-  //     required Map<String, dynamic> updates,
-  //   }) async {
-  //     try {
-  //       final userId = _auth.currentUser?.uid;
-  //       if (userId == null) return false;
-
-  //       final docRef = _firestore
-  //           .collection('users')
-  //           .doc(userId)
-  //           .collection('addresses')
-  //           .doc(addressId);
-
-  //       // Check if document exists
-  //       final docSnapshot = await docRef.get();
-  //       final updateData = {
-  //         ...updates,
-  //         'updatedAt': FieldValue.serverTimestamp(),
-  //       };
-
-  //       if (docSnapshot.exists) {
-  //         await docRef.update(updateData);
-  //         log('✅ Address updated: $addressId');
-  //       } else {
-  //         // Try to find in local list
-  //         final existingAddress = addresses.firstWhere(
-  //           (addr) => addr['id'] == addressId,
-  //           orElse: () => {},
-  //         );
-
-  //         if (existingAddress.isNotEmpty) {
-  //           await docRef.set({
-  //             ...existingAddress,
-  //             ...updateData,
-  //             'createdAt': FieldValue.serverTimestamp(),
-  //           });
-  //           log('✅ Address created: $addressId');
-  //         } else {
-  //           log('⚠️ Cannot create address: No existing data found');
-  //           return false;
-  //         }
-  //       }
-
-  //       // Update local list
-  //       final index = addresses.indexWhere((addr) => addr['id'] == addressId);
-  //       if (index != -1) {
-  //         addresses[index] = {
-  //           ...addresses[index],
-  //           ...updates,
-  //           'updatedAt': DateTime.now(),
-  //         };
-  //         addresses.refresh();
-  //       }
-
-  //       // Update selected address if it's the one being edited
-  //       if (selectedAddress['id'] == addressId) {
-  //         selectedAddress.value = {...selectedAddress, ...updates};
-  //         selectedAddress.refresh();
-  //       }
-
-  //       return true;
-  //     } catch (e) {
-  //       log('❌ Error updating address: $e');
-  //       Get.snackbar(
-  //         'Error',
-  //         'Failed to update address',
-  //         backgroundColor: Colors.red,
-  //         colorText: Colors.white,
-  //       );
-  //       return false;
-  //     }
-  //   }
-
-  // Future<bool> setAddressAsDefault(String addressId) async {
-  //   try {
-  //     final userId = _auth.currentUser?.uid;
-  //     if (userId == null) return false;
-
-  //     final snapshot = await addressesRef.get();
-  //     final batch = _firestore.batch();
-
-  //     for (final doc in snapshot.docs) {
-  //       final docRef = addressesRef.doc(doc.id);
-  //       if (doc.id == addressId) {
-  //         batch.update(docRef, {
-  //           'isDefault': true,
-  //           'updatedAt': FieldValue.serverTimestamp(),
-  //         });
-  //       } else {
-  //         batch.update(docRef, {
-  //           'isDefault': false,
-  //           'updatedAt': FieldValue.serverTimestamp(),
-  //         });
-  //       }
-  //     }
-
-  //     await batch.commit();
-
-  //     // Update local list
-  //     for (var i = 0; i < addresses.length; i++) {
-  //       if (addresses[i]['id'] == addressId) {
-  //         addresses[i]['isDefault'] = true;
-  //         addresses[i]['updatedAt'] = DateTime.now();
-  //       } else {
-  //         addresses[i]['isDefault'] = false;
-  //         addresses[i]['updatedAt'] = DateTime.now();
-  //       }
-  //     }
-  //     addresses.refresh();
-
-  //     Get.snackbar(
-  //       'Success',
-  //       'Default address updated',
-  //       backgroundColor: Colors.teal,
-  //       colorText: Colors.white,
-  //     );
-  //     return true;
-  //   } catch (e) {
-  //     log('❌ Error setting default address: $e');
-  //     Get.snackbar(
-  //       'Error',
-  //       'Failed to set default address',
-  //       backgroundColor: Colors.red,
-  //       colorText: Colors.white,
-  //     );
-  //     return false;
-  //   }
-  // }
-  Future<List<Map<String, dynamic>>> getSavedCarts() async {
-    try {
-      final snapshot = await savedCartsRef
-          .orderBy('createdAt', descending: true)
-          .get();
-      return snapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-    } catch (e) {
-      print('❌ Error loading saved carts: $e');
-      return [];
-    }
-  }
-
-  // Future<void> loadSavedCart(String cartId) async {
-  //   try {
-  //     final doc = await savedCartsRef.doc(cartId).get();
-  //     if (!doc.exists) return;
-
-  //     final data = doc.data() as Map<String, dynamic>;
-  //     final items = data['items'] as List<dynamic>;
-
-  //     // Clear current cart
-  //     // await clearCart();
-
-  //     // Add saved items to cart
-  //     for (var item in items) {
-  //       await addToCart(item as Map<String, dynamic>);
-  //     }
-
-  //     Get.snackbar(
-  //       'Cart Loaded',
-  //       'Cart loaded successfully',
-  //       backgroundColor: Colors.teal,
-  //       colorText: Colors.white,
-  //     );
-  //   } catch (e) {
-  //     print('❌ Error loading saved cart: $e');
-  //   }
-  // }
-
+  
   int get totalItemCount =>
       cartItems.fold(0, (sum, item) => sum + item.qty.value);
 

@@ -207,12 +207,12 @@ class OrderController extends GetxController {
 
       // Show user-friendly error
       if (e.toString().contains('index')) {
-        Get.snackbar(
-          'Database Update',
-          'Please wait while we optimize your order data...',
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-        );
+        // Get.snackbar(
+        //   'Database Update',
+        //   'Please wait while we optimize your order data...',
+        //   backgroundColor: Colors.orange,
+        //   colorText: Colors.white,
+        // );
       } else {
         Get.snackbar(
           'Error',
@@ -344,12 +344,12 @@ class OrderController extends GetxController {
         }
       }
 
-      Get.snackbar(
-        'Success',
-        'Order status updated',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Success',
+      //   'Order status updated',
+      //   backgroundColor: Colors.green,
+      //   colorText: Colors.white,
+      // );
 
       return true;
     } catch (e) {
@@ -357,8 +357,8 @@ class OrderController extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to update order status',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.red,
       );
       return false;
     }
@@ -396,12 +396,12 @@ class OrderController extends GetxController {
         }
       }
 
-      Get.snackbar(
-        'Success',
-        'Order cancelled successfully',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Success',
+      //   'Order cancelled successfully',
+      //   backgroundColor: Colors.green,
+      //   colorText: Colors.white,
+      // );
 
       return true;
     } catch (e) {
@@ -409,8 +409,8 @@ class OrderController extends GetxController {
       Get.snackbar(
         'Error',
         'Failed to cancel order',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        backgroundColor: Colors.white,
+        colorText: Colors.red,
       );
       return false;
     }
@@ -445,12 +445,12 @@ class OrderController extends GetxController {
         }
       }
 
-      Get.snackbar(
-        'Success',
-        'Order marked as completed',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   'Success',
+      //   'Order marked as completed',
+      //   backgroundColor: Colors.green,
+      //   colorText: Colors.white,
+      // );
 
       return true;
     } catch (e) {

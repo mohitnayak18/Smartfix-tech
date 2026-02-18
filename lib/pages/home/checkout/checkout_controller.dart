@@ -108,9 +108,19 @@ class CheckoutController extends GetxController {
   }
   
   // Validation methods
-  bool validatePhone() {
-    return phoneCtrl.text.trim().length == 10;
+ bool validatePhone() {
+  String phone = phoneCtrl.text.trim();
+  
+  // Remove any non-digit characters (spaces, dashes, etc.)
+  String cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
+  
+  // Check if it's exactly 10 digits
+  if (cleanPhone.length == 10) {
+    return true;
   }
+  
+  return false;
+}
   
   bool validateAddress() {
     if (useSavedAddress == true) {

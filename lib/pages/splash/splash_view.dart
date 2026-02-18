@@ -167,10 +167,10 @@ class _SplashViewState extends State<SplashView>
                           ).createShader(bounds);
                         },
                         child: Text(
-                          'SmartFix',
+                          'smartfixnm'.tr.toUpperCase(),
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 42,
+                            fontSize: 40,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 1.5,
                             shadows: [
@@ -204,9 +204,9 @@ class _SplashViewState extends State<SplashView>
                           ),
                         ),
                         child: Text(
-                          'MOBILE REPAIR SERVICES',
+                          'Technology'.tr.toUpperCase(),
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 20,
                             fontWeight: FontWeight.w500,
                             color: Colors.white.withOpacity(0.9),
                             letterSpacing: 3,
