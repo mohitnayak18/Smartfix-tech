@@ -118,7 +118,6 @@ class _StoreScreenState extends State<StoreScreen> {
               Get.to(() => const CartView()); // 👈 Navigate here
             },
             child: Stack(
-              
               alignment: Alignment.topRight,
               children: [
                 const Icon(
@@ -564,7 +563,10 @@ class _StoreScreenState extends State<StoreScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        controller.selectedModel.value!.name,
+                        (controller.selectedModel.value?.name.isNotEmpty ??
+                                false)
+                            ? controller.selectedModel.value!.name
+                            : 'Display',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -784,7 +786,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 children: [
                   // Product Name
                   Text(
-                    product.name,
+                    product.name.isNotEmpty ? product.name : 'Lcd Display',
                     style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
