@@ -21,6 +21,7 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
   String _fullAddress = "";
   bool _loadingAddress = false;
 
+  // Move these to StatefulWidget to prevent rebuild issues
   String _selectedLabel = "Home";
   final List<String> _labels = ["Home", "Work", "Other"];
   final TextEditingController _titleCtrl = TextEditingController();
@@ -30,6 +31,13 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _phoneCtrl.dispose();
+    super.dispose();
   }
 
   // ================= LOCATION =================
@@ -117,136 +125,173 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
         });
   }
 
-  // ================= CONFIRM =================
+  // ================= CONFIRM (OPTIMIZED) =================
 
   Future<void> _confirm() async {
     _titleCtrl.text = _title; // prefill
-    _phoneCtrl.clear();
+
+    // Use StatefulBuilder for better performance in dialog
+    String tempSelectedLabel = _selectedLabel; // Local state for dialog
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        backgroundColor: Colors.teal.shade50,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: const Text("Save address"),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // LABEL
-              // const Text("Save as"),
-              // const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: _labels.map((label) {
-                  final selected = _selectedLabel == label;
-                  return ChoiceChip(
-                    label: Text(label),
-                    selected: selected,
-                    onSelected: (_) {
-                      setState(() => _selectedLabel = label);
-                    },
-                    selectedColor: Colors.teal,
-                    labelStyle: TextStyle(
-                      color: selected ? Colors.white : Colors.black,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              backgroundColor: Colors.teal.shade50,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              title: const Text("Save address"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // LABEL CHOICES - OPTIMIZED
+                    Wrap(
+                      spacing: 8,
+                      children: _labels.map((label) {
+                        final selected = tempSelectedLabel == label;
+                        return ChoiceChip(
+                          label: Text(label),
+                          selected: selected,
+                          onSelected: (selected) {
+                            if (selected) {
+                              setStateDialog(() {
+                                tempSelectedLabel =
+                                    label; // Update local state only
+                              });
+                            }
+                          },
+                          selectedColor: Colors.teal,
+                          backgroundColor: Colors.grey.shade200,
+                          labelStyle: TextStyle(
+                            color: selected ? Colors.white : Colors.black,
+                            fontWeight: selected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                          pressElevation: 0, // Reduce animation
+                          elevation: 0, // Reduce animation
+                        );
+                      }).toList(),
                     ),
-                  );
-                }).toList(),
-              ),
 
-              const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-              // ADDRESS TITLE
-              TextField(
-                controller: _titleCtrl,
-                decoration: const InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                    borderSide: BorderSide(color: Colors.teal),
-                  ),
-                  labelText: "Address title",
-                  hintText: "e.g. Flat, House name",
+                    // ADDRESS TITLE
+                    TextField(
+                      controller: _titleCtrl,
+                      decoration: const InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                          borderSide: BorderSide(color: Colors.teal),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                          borderSide: BorderSide(color: Colors.teal, width: 2),
+                        ),
+                        labelText: "Address title",
+                        hintText: "e.g. Flat, House name",
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // PHONE
+                    TextField(
+                      controller: _phoneCtrl,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal, width: 2),
+                        ),
+                        labelText: "Phone number",
+                        hintText: "Enter your phone number",
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // ADDRESS PREVIEW
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _fullAddress,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-
-              const SizedBox(height: 12),
-
-              // PHONE
-              TextField(
-                controller: _phoneCtrl,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.teal),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.grey.shade700,
                   ),
-                  labelText: "Phone number",
+                  child: const Text("Cancel"),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_phoneCtrl.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please enter phone number"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
 
-              const SizedBox(height: 12),
+                    // Update the actual state with dialog selection
+                    setState(() {
+                      _selectedLabel = tempSelectedLabel;
+                    });
 
-              // ADDRESS PREVIEW
-              Text(
-                _fullAddress,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel", style: TextStyle(color: Colors.black)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (_phoneCtrl.text.trim().isEmpty) return;
+                    await _saveAddressWithExtra();
 
-              await _saveAddressWithExtra();
-
-              Navigator.pop(context); // close dialog
-              Navigator.pop(context, {
-                "lat": _centerLatLng.latitude,
-                "lng": _centerLatLng.longitude,
-                "label": _selectedLabel,
-                "title": _titleCtrl.text.trim(),
-                "phone": _phoneCtrl.text.trim(),
-                "address": _fullAddress,
-              });
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-            child: Text("Save", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+                    Navigator.pop(context); // close dialog
+                    Navigator.pop(context, {
+                      "lat": _centerLatLng.latitude,
+                      "lng": _centerLatLng.longitude,
+                      "label": _selectedLabel,
+                      "title": _titleCtrl.text.trim(),
+                      "phone": _phoneCtrl.text.trim(),
+                      "address": _fullAddress,
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: const Text("Save"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
-
-  // ================= LABEL UI =================
-
-  // Widget _labelSelector() {
-  //   return Row(
-  //     children: _labels.map((label) {
-  //       final selected = _selectedLabel == label;
-  //       return Padding(
-  //         padding: const EdgeInsets.only(right: 8),
-  //         child: ChoiceChip(
-  //           label: Text(label),
-  //           selected: selected,
-  //           onSelected: (_) {
-  //             setState(() => _selectedLabel = label);
-  //           },
-  //           selectedColor: Colors.deepOrange,
-  //           labelStyle: TextStyle(
-  //             color: selected ? Colors.white : Colors.black,
-  //           ),
-  //         ),
-  //       );
-  //     }).toList(),
-  //   );
-  // }
 
   // ================= UI =================
 
@@ -260,7 +305,6 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
               target: _centerLatLng,
               zoom: 18,
             ),
-            // myLocationEnabled: true,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             onMapCreated: (controller) => _mapController = controller,
@@ -281,17 +325,15 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
           Positioned(
             right: 16,
             bottom: 210,
-            child: ElevatedButton.icon(
+            child: FloatingActionButton.extended(
               onPressed: _getCurrentLocation,
               icon: const Icon(Icons.my_location),
               label: const Text("Current location"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black,
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
               ),
             ),
           ),
@@ -325,7 +367,14 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: _loadingAddress
-                            ? const Text("Fetching address...")
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.teal,
+                                ),
+                              )
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -335,6 +384,8 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -343,6 +394,8 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
                                       fontSize: 13,
                                       color: Colors.grey,
                                     ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -352,14 +405,6 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
 
                   const SizedBox(height: 16),
 
-                  // const Text(
-                  //   "Save as",
-                  //   style: TextStyle(fontWeight: FontWeight.w500),
-                  // ),
-                  // const SizedBox(height: 8),
-                  // _labelSelector(),
-                  const SizedBox(height: 16),
-
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -367,13 +412,15 @@ class _MapLocationScreenState extends State<MapLocationScreen> {
                       onPressed: _loadingAddress ? null : _confirm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey.shade300,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       child: const Text(
                         "Confirm & proceed",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ),

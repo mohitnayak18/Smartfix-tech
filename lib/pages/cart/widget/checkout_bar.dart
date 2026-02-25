@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -15,9 +16,7 @@ class CheckoutBar extends StatelessWidget {
       if (cartCtrl.cartItems.isEmpty) return const SizedBox();
 
       return Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-        ),
+        decoration: BoxDecoration(color: Colors.white),
         child: SafeArea(
           top: false,
           child: Padding(
@@ -196,7 +195,7 @@ class CheckoutBar extends StatelessWidget {
                               );
                               return;
                             }
-
+                            // FirebaseCrashlytics.instance.crash();
                             // Navigate to checkout - GetX handles the data automatically
                             Get.to(() => const CheckoutView());
                           }
@@ -229,7 +228,8 @@ class CheckoutBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    "By continuing, you agree to our Terms of Use & Privacy Policy".tr,
+                    "By continuing, you agree to our Terms of Use & Privacy Policy"
+                        .tr,
                     style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
                     textAlign: TextAlign.center,
                   ),

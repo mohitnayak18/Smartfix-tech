@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:smartfixTech/api_calls/api_call.dart';
 import 'package:smartfixTech/pages/home/home_controller.dart';
 import 'package:smartfixTech/pages/order/order_listscreen.dart';
+import 'package:smartfixTech/pages/profile/widget/about_screen.dart';
+import 'package:smartfixTech/pages/profile/widget/legal_screen.dart';
+import 'package:smartfixTech/pages/profile/widget/support_screen.dart';
 
 const _appBarTitleStyle = TextStyle(
   fontSize: 20,
@@ -12,25 +16,17 @@ const _appBarTitleStyle = TextStyle(
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
-  // final CartController cartController = Get.put(CartController());
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find<HomeController>();
+
+  // Create a scroll controller
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      //  AppBar(
-      //   automaticallyImplyLeading: true,
-      //   toolbarHeight: 80,
-      //   backgroundColor: Theme.of(context).primaryColor,
-      //   title: Text("My Account"),
-      //   titleTextStyle: TextStyle(
-      //     height: 2.8,
-      //     fontWeight: FontWeight.bold,
-      //     fontSize: 18,
-      //   ),
-      // ),
       body: SingleChildScrollView(
+        controller: _scrollController, // Assign the controller
         child: Column(
           children: [
             const SizedBox(height: 12),
@@ -44,39 +40,96 @@ class ProfileScreen extends StatelessWidget {
             _sectionTile(
               title: "My Account",
               children: [
-                _listItem(Icons.notifications, "My Notifications (1)"),
-                _listItem(Icons.list_alt, "My List"),
-                _listItem(Icons.location_on, "Delivery Addresses"),
-                _listItem(Icons.credit_card, "PAN Card Information"),
+                _listItem(Icons.notifications, "My Notifications", () {
+                  Get.snackbar(
+                    "Coming Soon",
+                    "Notifications feature coming soon",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.teal,
+                    colorText: Colors.white,
+                  );
+                }),
+                _listItem(Icons.list_alt, "My List", () {
+                  Get.snackbar(
+                    "Coming Soon",
+                    "My List feature coming soon",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.teal,
+                    colorText: Colors.white,
+                  );
+                }),
+                _listItem(Icons.location_on, "Delivery Addresses", () {
+                  Get.snackbar(
+                    "Coming Soon",
+                    "Address management coming soon",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.teal,
+                    colorText: Colors.white,
+                  );
+                }),
               ],
             ),
 
             _sectionTile(
               title: "Payment Modes",
               children: [
-                _listItem(Icons.account_balance_wallet, "Saved Wallets"),
-                _listItem(Icons.credit_card, "Saved Cards"),
+                _listItem(Icons.account_balance_wallet, "Saved Wallets", () {
+                  Get.snackbar(
+                    "Coming Soon",
+                    "Wallet feature coming soon",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.teal,
+                    colorText: Colors.white,
+                  );
+                }),
+                _listItem(Icons.credit_card, "Saved Cards", () {
+                  Get.snackbar(
+                    "Coming Soon",
+                    "Saved cards feature coming soon",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.teal,
+                    colorText: Colors.white,
+                  );
+                }),
               ],
             ),
 
             _sectionTile(
               title: "Help & Support",
               children: [
-                _listItem(Icons.support_agent, "Customer Support"),
-                _listItem(Icons.assignment_return, "Returns & Refunds"),
+                _listItem(Icons.support_agent, "Customer Support", () {
+                  Get.to(() => const SupportScreen());
+                }),
+                _listItem(Icons.assignment_return, "Returns & Refunds", () {
+                  Get.to(() => const LegalScreen());
+                }),
               ],
             ),
 
             _sectionTile(
               title: "Offer & Discounts",
-              children: [_listItem(Icons.local_offer, "Available Offers")],
+              children: [
+                _listItem(Icons.local_offer, "Available Offers", () {
+                  Get.snackbar(
+                    "Coming Soon",
+                    "Offers feature coming soon",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.teal,
+                    colorText: Colors.white,
+                  );
+                }),
+              ],
             ),
 
             _sectionTile(
               title: "More Information",
               children: [
-                _listItem(Icons.info, "About App"),
-                _listItem(Icons.policy, "Legal Information"),
+                _listItem(Icons.info, "About App", () {
+                  Get.to(() => const AboutScreen());
+                }),
+                _listItem(Icons.policy, "Legal Information", () {
+                  Get.to(() => const LegalScreen());
+                }),
               ],
             ),
 
@@ -104,7 +157,6 @@ class ProfileScreen extends StatelessWidget {
       foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: false,
-      // actions: [_buildClearCartButton(cartCtrl)],
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
@@ -123,9 +175,35 @@ class ProfileScreen extends StatelessWidget {
           child: const Icon(Icons.person, size: 22, color: Colors.white),
         ),
         const SizedBox(width: 12),
-        const Text("My Account", style: _appBarTitleStyle),
+
+        // Clickable My Account text
+        GestureDetector(
+          onTap: _scrollToTop, // Call method to scroll to top
+          child: const Text("My Account", style: _appBarTitleStyle),
+        ),
       ],
     );
+  }
+
+  // Method to scroll to top
+  void _scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+
+      // Optional: Show a small feedback
+      Get.snackbar(
+        "Profile",
+        "Scrolled to top",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.teal,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 1),
+      );
+    }
   }
 
   // ---------------- PROFILE HEADER ----------------
@@ -138,7 +216,7 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 16, 15, 15).withOpacity(0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -172,17 +250,22 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 6),
                   // GestureDetector(
                   //   onTap: () {
-                  //     Dialog();
-                  //     // TODO: Navigate to Edit Profile Screen
+                  //     Get.snackbar(
+                  //       "Coming Soon",
+                  //       "Edit profile feature coming soon",
+                  //       snackPosition: SnackPosition.BOTTOM,
+                  //       backgroundColor: Colors.teal,
+                  //       colorText: Colors.white,
+                  //     );
                   //   },
-                  // child: Text(
-                  //   "Edit Profile",
-                  //   style: TextStyle(
-                  //     color: Theme.of(context).primaryColor,
-                  //     fontSize: 13,
-                  //     fontWeight: FontWeight.w500,
+                  //   child: Text(
+                  //     "Edit Profile",
+                  //     style: TextStyle(
+                  //       color: Theme.of(context).primaryColor,
+                  //       fontSize: 13,
+                  //       fontWeight: FontWeight.w500,
+                  //     ),
                   //   ),
-                  // ),
                   // ),
                 ],
               ),
@@ -203,14 +286,18 @@ class ProfileScreen extends StatelessWidget {
         children: [
           _quickItem(context, Icons.shopping_bag, "Orders", () {
             Get.to(() => OrdersListScreen());
-            // Get.toNamed('/OrderDetails',arguments: Order);
           }),
-
-          // _quickItem(context, Icons.discount, "Coupons", () {
-          //   Get.snackbar("Coming Soon", "Coupons feature coming soon");
-          // }),
+          _quickItem(context, Icons.home_outlined, "Saved Addresses", () {
+            Get.snackbar(
+              "Coming Soon",
+              "Address management coming soon",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.teal,
+              colorText: Colors.white,
+            );
+          }),
           _quickItem(context, Icons.help, "Help", () {
-            Get.snackbar("Help", "Customer support coming soon");
+            Get.to(() => const SupportScreen());
           }),
         ],
       ),
@@ -237,26 +324,28 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _sectionTile({required String title, required List<Widget> children}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 5),
-      decoration: BoxDecoration(color: Colors.white24),
+      margin: const EdgeInsets.only(bottom: 2),
+      decoration: BoxDecoration(color: Colors.white),
       child: ExpansionTile(
         shape: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-        // collapsedShape: Border(bottom: BorderSide(color: Colors.grey.shade300)),
         iconColor: Colors.teal,
-        // backgroundColor: Colors.teal.shade100,
+        collapsedIconColor: Colors.teal,
         tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         children: children,
       ),
     );
   }
 
-  Widget _listItem(IconData icon, String text) {
+  Widget _listItem(IconData icon, String text, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Colors.teal),
       title: Text(text),
       trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 
@@ -265,11 +354,15 @@ class ProfileScreen extends StatelessWidget {
       color: Colors.white,
       child: ListTile(
         leading: const Icon(Icons.power_settings_new, color: Colors.teal),
-        title: const Text("Sign Out"),
+        title: const Text(
+          "Sign Out",
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
         onTap: () {
           Get.defaultDialog(
             backgroundColor: Colors.white,
             title: "Logout",
+            titleStyle: const TextStyle(fontWeight: FontWeight.bold),
             middleText: "Are you sure you want to logout?",
             textConfirm: "Yes",
             textCancel: "No",

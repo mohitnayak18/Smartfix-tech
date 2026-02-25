@@ -85,19 +85,12 @@ class CartView extends StatelessWidget {
           child: const Icon(Icons.shopping_cart, size: 20, color: Colors.white),
         ),
         const SizedBox(width: 12),
-        Obx(() {
-          final itemCount = Get.find<CartController>().cartItems.length;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("My Cart", style: _appBarTitleStyle),
-              Text(
-                "$itemCount ${itemCount == 1 ? 'item' : 'items'}",
-                style: const TextStyle(fontSize: 12, color: Colors.white70),
-              ),
-            ],
-          );
-        }),
+
+        // final itemCount = Get.find<CartController>().cartItems.length;
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [Text("My Cart", style: _appBarTitleStyle)],
+        ),
       ],
     );
   }
@@ -818,7 +811,6 @@ class CartView extends StatelessWidget {
                             Icons.check_circle,
                             color: Colors.white,
                           ),
-                          
                         );
                       },
                       style: ElevatedButton.styleFrom(

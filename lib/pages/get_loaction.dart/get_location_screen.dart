@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:smartfixTech/pages/Map_Location/Map_Location_screen.dart';
+import 'package:smartfixTech/theme/dimens.dart';
 import 'package:smartfixTech/utils/utils.dart'
     show AssetConstants, AppConstants;
 
@@ -17,6 +18,16 @@ class GetLocationScreen extends StatefulWidget {
 class _GetLocationScreenState extends State<GetLocationScreen> {
   final TextEditingController searchCtrl = TextEditingController();
   String? selectedAddressId;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   searchCtrl.addListener(() {
+  //     if (mounted) {
+  //       setState(() {}); // Rebuild to show/hide clear button
+  //     }
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -73,6 +84,7 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ==================== GOOGLE SEARCH ====================
+          // ==================== GOOGLE SEARCH ====================
           Padding(
             padding: const EdgeInsets.all(12),
             child: GooglePlaceAutoCompleteTextField(
@@ -81,6 +93,101 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
               debounceTime: 600,
               isLatLngRequired: true,
               countries: const ["in"],
+
+              boxDecoration: BoxDecoration(
+                color: Colors.white, // Background color of dropdown
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+
+              // Custom styling for each search result item
+              itemBuilder: (context, index, prediction) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: index.isEven
+                        ? Colors
+                              .grey
+                              .shade50 // Light grey for even rows
+                        : Colors.white, // White for odd rows
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey.shade200, width: 1),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Location icon with teal color
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.teal.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.teal.shade400,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Address text
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              prediction.description ?? '',
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (prediction
+                                    .structuredFormatting
+                                    ?.secondaryText !=
+                                null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  prediction
+                                      .structuredFormatting!
+                                      .secondaryText!,
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      // Optional: Add arrow icon
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.grey.shade400,
+                        size: 12,
+                      ),
+                    ],
+                  ),
+                );
+              },
+
+              // Custom text style for the input field
+              textStyle: const TextStyle(color: Colors.black, fontSize: 16),
 
               inputDecoration: InputDecoration(
                 filled: true,
@@ -96,6 +203,15 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                     color: Colors.blueGrey,
                   ),
                 ),
+                suffixIcon: searchCtrl.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear, color: Colors.grey.shade500),
+                        onPressed: () {
+                          searchCtrl.clear();
+                          setState(() {});
+                        },
+                      )
+                    : null,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: const BorderSide(
@@ -104,10 +220,10 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(
-                    color: Colors.blueGrey,
-                    width: 1.2,
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: Colors.teal.shade400,
+                    width: 1.5,
                   ),
                 ),
               ),
@@ -121,11 +237,11 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                 final lng = double.tryParse(prediction.lng ?? '0');
 
                 if (lat != null && lng != null) {
-                  showSaveAddressDialog(
+                  _showSaveAddressBottomSheet(
+                    uid: uid,
                     address: prediction.description!,
                     lat: lat,
                     lng: lng,
-                    uid: uid,
                   );
                 }
               },
@@ -145,7 +261,7 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                   final result = await Get.to(() => const MapLocationScreen());
 
                   if (result != null) {
-                    _openSaveBottomSheet(
+                    _showSaveAddressBottomSheet(
                       uid: uid,
                       address: result["address"],
                       lat: result["lat"],
@@ -295,10 +411,11 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                                     ),
                                   ),
                                   PopupMenuButton<String>(
+                                    color: Colors.white,
                                     icon: const Icon(Icons.more_vert, size: 20),
                                     onSelected: (value) async {
                                       if (value == 'edit') {
-                                        _openEditBottomSheet(
+                                        _showEditAddressBottomSheet(
                                           uid: uid,
                                           docId: docId,
                                           data: map,
@@ -327,6 +444,7 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                                           ],
                                         ),
                                       ),
+                                      // Dimens.boxHeight10,
                                       const PopupMenuItem(
                                         value: 'delete',
                                         child: Row(
@@ -384,12 +502,12 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
     }
   }
 
-  // ================= SHOW SAVE ADDRESS DIALOG =================
-  void showSaveAddressDialog({
+  // ================= SINGLE BOTTOM SHEET FOR SAVING ADDRESS =================
+  void _showSaveAddressBottomSheet({
+    required String uid,
     required String address,
     required double lat,
     required double lng,
-    required String uid,
   }) {
     String addressType = "Home";
     final phoneCtrl = TextEditingController();
@@ -422,11 +540,15 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                 Row(
                   children: ["Home", "Work", "Other"].map((type) {
                     return Expanded(
-                      child: ChoiceChip(
-                        label: Text(type),
-                        selected: addressType == type,
-                        onSelected: (_) => setState(() => addressType = type),
-                        selectedColor: Colors.teal.shade200,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ChoiceChip(
+                          label: Text(type),
+                          selected: addressType == type,
+                          onSelected: (_) => setState(() => addressType = type),
+                          selectedColor: Colors.teal.shade200,
+                          backgroundColor: Colors.grey.shade100,
+                        ),
                       ),
                     );
                   }).toList(),
@@ -437,60 +559,82 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                 TextField(
                   controller: phoneCtrl,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: "Phone number",
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    prefixIcon: const Icon(Icons.phone, size: 20),
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (phoneCtrl.text.trim().isEmpty) {
-                        Get.snackbar(
-                          "Error",
-                          "Please enter phone number",
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
-                        return;
-                      }
-
-                      await FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(uid)
-                          .collection("addresses")
-                          .add({
-                            "address": address,
-                            "lat": lat,
-                            "lng": lng,
-                            "label": addressType,
-                            "phone": phoneCtrl.text.trim(),
-                            "createdAt": Timestamp.now(),
-                          });
-
-                      Get.back();
-                      Get.back(
-                        result: {
-                          "address": address,
-                          "lat": lat,
-                          "lng": lng,
-                          "type": addressType,
-                        },
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Get.back(),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.grey,
+                          side: const BorderSide(color: Colors.grey),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text("Cancel"),
                       ),
                     ),
-                    child: const Text("Save & Continue"),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (phoneCtrl.text.trim().isEmpty) {
+                            Get.snackbar(
+                              "Error",
+                              "Please enter phone number",
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+
+                          await FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(uid)
+                              .collection("addresses")
+                              .add({
+                                "address": address,
+                                "lat": lat,
+                                "lng": lng,
+                                "label": addressType,
+                                "phone": phoneCtrl.text.trim(),
+                                "createdAt": Timestamp.now(),
+                              });
+
+                          Get.back();
+                          Get.back(
+                            result: {
+                              "address": address,
+                              "lat": lat,
+                              "lng": lng,
+                              "type": addressType,
+                            },
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text("Save & Continue"),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             );
@@ -501,15 +645,14 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
     );
   }
 
-  // ================= SAVE ADDRESS BOTTOM SHEET =================
-  void _openSaveBottomSheet({
+  // ================= BOTTOM SHEET FOR EDITING ADDRESS =================
+  void _showEditAddressBottomSheet({
     required String uid,
-    required String address,
-    required double lat,
-    required double lng,
+    required String docId,
+    required Map<String, dynamic> data,
   }) {
-    String addressType = "Home";
-    final phoneCtrl = TextEditingController();
+    String addressType = data["label"] ?? "Home";
+    final phoneCtrl = TextEditingController(text: data["phone"] ?? "");
 
     Get.bottomSheet(
       Container(
@@ -525,11 +668,13 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  address,
+                  data["address"] ?? "",
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
 
                 const SizedBox(height: 14),
@@ -537,10 +682,15 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                 Row(
                   children: ["Home", "Work", "Other"].map((type) {
                     return Expanded(
-                      child: ChoiceChip(
-                        label: Text(type),
-                        selected: addressType == type,
-                        onSelected: (_) => setState(() => addressType = type),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ChoiceChip(
+                          label: Text(type),
+                          selected: addressType == type,
+                          onSelected: (_) => setState(() => addressType = type),
+                          selectedColor: Colors.teal.shade200,
+                          backgroundColor: Colors.grey.shade100,
+                        ),
                       ),
                     );
                   }).toList(),
@@ -551,41 +701,77 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                 TextField(
                   controller: phoneCtrl,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: "Phone number"),
+                  decoration: InputDecoration(
+                    labelText: "Phone number",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    prefixIcon: const Icon(Icons.phone, size: 20),
+                  ),
                 ),
 
                 const SizedBox(height: 20),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await FirebaseFirestore.instance
-                          .collection("users")
-                          .doc(uid)
-                          .collection("addresses")
-                          .add({
-                            "address": address,
-                            "lat": lat,
-                            "lng": lng,
-                            "label": addressType,
-                            "phone": phoneCtrl.text.trim(),
-                            "createdAt": Timestamp.now(),
-                          });
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Get.back(),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.grey,
+                          side: const BorderSide(color: Colors.grey),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text("Cancel"),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (phoneCtrl.text.trim().isEmpty) {
+                            Get.snackbar(
+                              "Error",
+                              "Please enter phone number",
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
 
-                      Get.back();
-                      Get.back(
-                        result: {
-                          "address": address,
-                          "lat": lat,
-                          "lng": lng,
-                          "type": addressType,
+                          await FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(uid)
+                              .collection("addresses")
+                              .doc(docId)
+                              .update({
+                                "label": addressType,
+                                "phone": phoneCtrl.text.trim(),
+                              });
+
+                          Get.back();
+                          Get.snackbar(
+                            "Success",
+                            "Address updated successfully",
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                          );
                         },
-                      );
-                    },
-                    child: const Text("Save & Continue"),
-                  ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text("Update Address"),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             );
@@ -595,86 +781,4 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
       isScrollControlled: true,
     );
   }
-}
-
-void _openEditBottomSheet({
-  required String uid,
-  required String docId,
-  required Map<String, dynamic> data,
-}) {
-  String addressType = data["label"] ?? "Home";
-  final phoneCtrl = TextEditingController(text: data["phone"] ?? "");
-
-  Get.bottomSheet(
-    Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: StatefulBuilder(
-        builder: (context, setState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                data["address"],
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              Row(
-                children: ["Home", "Work", "Other"].map((type) {
-                  return Expanded(
-                    child: ChoiceChip(
-                      label: Text(type),
-                      selected: addressType == type,
-                      onSelected: (_) => setState(() => addressType = type),
-                    ),
-                  );
-                }).toList(),
-              ),
-
-              const SizedBox(height: 12),
-
-              TextField(
-                controller: phoneCtrl,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: "Phone number"),
-              ),
-
-              const SizedBox(height: 20),
-
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(uid)
-                        .collection("addresses")
-                        .doc(docId)
-                        .update({
-                          "label": addressType,
-                          "phone": phoneCtrl.text.trim(),
-                        });
-
-                    Get.back();
-                  },
-                  child: const Text("Update Address"),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    ),
-    isScrollControlled: true,
-  );
 }

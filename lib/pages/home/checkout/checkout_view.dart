@@ -67,6 +67,7 @@ class CheckoutView extends StatelessWidget {
           letterSpacing: 0.5,
         ),
       ),
+      automaticallyImplyLeading: false,
       backgroundColor: Colors.teal,
       foregroundColor: Colors.white,
       elevation: 2,
@@ -74,18 +75,18 @@ class CheckoutView extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios, size: 20),
-        onPressed: () => Get.back(),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.headset_mic, size: 22),
-          onPressed: () {
-            // Handle support
-          },
-        ),
-      ],
+      // leading: IconButton(
+      //   icon: const Icon(Icons.arrow_back_ios, size: 20),
+      //   onPressed: () => Get.back(),
+      // ),
+      // actions: [
+      // IconButton(
+      //   icon: const Icon(Icons.headset_mic, size: 22),
+      //   onPressed: () {
+      //     // Handle support
+      //   },
+      // ),
+      // ],
     );
   }
 
@@ -291,7 +292,8 @@ class CheckoutView extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Display selected address from cart
-            if (selectedAddress.isNotEmpty && selectedAddress['address'] != null)
+            if (selectedAddress.isNotEmpty &&
+                selectedAddress['address'] != null)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -439,61 +441,67 @@ class CheckoutView extends StatelessWidget {
   }
 
   Widget _buildPhoneInputField() {
-  final CheckoutController checkoutCtrl = Get.find<CheckoutController>();
-  
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const Text(
-        "Contact Number",
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-      ),
-      const SizedBox(height: 8),
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+    final CheckoutController checkoutCtrl = Get.find<CheckoutController>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Contact Number",
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         ),
-        child: TextFormField(
-          controller: checkoutCtrl.phoneCtrl,
-          keyboardType: TextInputType.phone,
-          maxLength: 10,
-          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
-          decoration: InputDecoration(
-            hintText: "Enter 10-digit mobile number",
-            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 14,
-              
-            ),
-            focusColor: Colors.teal,
-            prefixIcon: Icon(
-              Icons.phone,
-              color: Colors.teal.shade300,
-              size: 18,
-            ),
-            suffixIcon: checkoutCtrl.phoneCtrl.text.length == 10
-                ? Icon(
-                    Icons.check_circle,
-                    color: Colors.green.shade400,
-                    size: 18,
-                  )
-                : null,
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
           ),
-          onChanged: (value) {
-            // Force update to show/hide check icon
-            checkoutCtrl.phoneCtrl.text = value.trim();
-            checkoutCtrl.phoneCtrl.selection = TextSelection.fromPosition(
-              TextPosition(offset: checkoutCtrl.phoneCtrl.text.length),
-            );
-          },
+          child: TextFormField(
+            controller: checkoutCtrl.phoneCtrl,
+            keyboardType: TextInputType.phone,
+            maxLength: 10,
+            buildCounter:
+                (
+                  context, {
+                  required currentLength,
+                  required isFocused,
+                  maxLength,
+                }) => null,
+            decoration: InputDecoration(
+              hintText: "Enter 10-digit mobile number",
+              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
+              focusColor: Colors.teal,
+              prefixIcon: Icon(
+                Icons.phone,
+                color: Colors.teal.shade300,
+                size: 18,
+              ),
+              suffixIcon: checkoutCtrl.phoneCtrl.text.length == 10
+                  ? Icon(
+                      Icons.check_circle,
+                      color: Colors.green.shade400,
+                      size: 18,
+                    )
+                  : null,
+            ),
+            onChanged: (value) {
+              // Force update to show/hide check icon
+              checkoutCtrl.phoneCtrl.text = value.trim();
+              checkoutCtrl.phoneCtrl.selection = TextSelection.fromPosition(
+                TextPosition(offset: checkoutCtrl.phoneCtrl.text.length),
+              );
+            },
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
+
   // Price Summary with Icons
   Widget _buildPriceSummary(CartController cartCtrl) {
     return Container(
@@ -577,7 +585,7 @@ class CheckoutView extends StatelessWidget {
               value: cartCtrl.subtotal.value,
             ),
             const SizedBox(height: 10),
-            
+
             _buildPriceRowWithIcon(
               icon: Icons.discount_outlined,
               label: "Discount",
@@ -585,21 +593,21 @@ class CheckoutView extends StatelessWidget {
               isDiscount: true,
             ),
             const SizedBox(height: 10),
-            
+
             _buildPriceRowWithIcon(
               icon: Icons.devices,
               label: "Platform Fee",
               value: cartCtrl.platformFee.value,
             ),
             const SizedBox(height: 10),
-            
+
             _buildPriceRowWithIcon(
               icon: Icons.delivery_dining,
               label: "Shipping Fee",
               value: cartCtrl.shippingFee.value,
               showFree: cartCtrl.shippingFee.value == 0,
             ),
-            
+
             if (cartCtrl.gstAmount.value > 0) ...[
               const SizedBox(height: 10),
               _buildPriceRowWithIcon(
@@ -734,10 +742,7 @@ class CheckoutView extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade700,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
           ),
         ),
         if (showFree)
@@ -955,7 +960,11 @@ class CheckoutView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Icon(Icons.check_circle_outline, size: 16, color: Colors.teal.shade300),
+          Icon(
+            Icons.check_circle_outline,
+            size: 16,
+            color: Colors.teal.shade300,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

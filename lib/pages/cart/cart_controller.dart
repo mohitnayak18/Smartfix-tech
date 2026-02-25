@@ -75,10 +75,18 @@ class CartController extends GetxController {
 
   DocumentReference get appConfigRef =>
       _firestore.collection('app_config').doc('settings');
+
   @override
   void onInit() {
     super.onInit();
     _initializeController();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    // Load addresses after the first frame is built
+    loadAddresses();
   }
 
   String? get selectedAddressText {
@@ -114,7 +122,7 @@ class CartController extends GetxController {
       final user = _auth.currentUser;
       if (user == null) return;
 
-      isLoading.value = true;
+      isLoadingAddresses.value = true;
 
       final snapshot = await addressesRef
           .orderBy('createdAt', descending: true)
@@ -142,10 +150,10 @@ class CartController extends GetxController {
         await selectAddress(defaultAddress);
       }
 
-      isLoading.value = false;
+      isLoadingAddresses.value = false;
     } catch (e) {
       log('❌ Error loading addresses: $e');
-      isLoading.value = false;
+      isLoadingAddresses.value = false;
       Get.snackbar(
         'Error',
         'Failed to load addresses',
@@ -584,10 +592,10 @@ class CartController extends GetxController {
       // Load app configuration from Firebase
       await loadAppConfig();
 
-      // Load user data from Firebase
+      // Load only cart data here (addresses moved to onReady)
       await Future.wait([
         loadCartFromFirebase(),
-        loadAddresses(), // Changed from loadAddressesFromFirestore
+        // loadAddresses(), // REMOVED - now in onReady
         // loadOrdersFromFirestore(),
       ]);
 
@@ -742,7 +750,7 @@ class CartController extends GetxController {
           'model': product['model'],
           'price': product['price'],
           'image': product['image'],
-          'brandId':product['brandId'],
+          'brandId': product['brandId'],
           'modelId': product['modelId'],
           'quantity': product['quantity'],
           // 'notes': product['notes'] ?? '',
@@ -810,9 +818,11 @@ class CartController extends GetxController {
     _calculateTotal();
     log('TOTAL = ${totalPrice.value}');
   }
- void setSelectedAddress(Map<String, dynamic> address) {
+
+  void setSelectedAddress(Map<String, dynamic> address) {
     selectedAddress.value = address;
   }
+
   void _calculateGST() {
     // final taxable = subtotal.value - discount.value + platformFee.value;
     gstAmount.value = gstPercentage.value > 0 ? gstPercentage.value : 0;
@@ -826,7 +836,7 @@ class CartController extends GetxController {
             shippingFee.value -
             gstAmount.value);
   }
-  
+
   int get totalItemCount =>
       cartItems.fold(0, (sum, item) => sum + item.qty.value);
 
