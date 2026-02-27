@@ -81,17 +81,17 @@ class AboutScreen extends StatelessWidget {
               title: 'Compatibility',
               value: 'Android 5.0+',
             ),
+
             // _buildInfoTile(
             //   icon: Icons.ios_share,
             //   title: 'iOS Compatibility',
             //   value: 'iOS 12.0+',
             // ),
-            _buildInfoTile(
-              icon: Icons.storage,
-              title: 'App Size',
-              value: '~55 MB',
-            ),
-
+            // _buildInfoTile(
+            //   icon: Icons.storage,
+            //   title: 'App Size',
+            //   value: '~55 MB',
+            // ),
             const Divider(
               height: 2,
               thickness: 3,
@@ -163,29 +163,44 @@ class AboutScreen extends StatelessWidget {
                   const ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.teal,
-                      child: Icon(Icons.code, color: Colors.white),
+                      child: Icon(Icons.person, color: Colors.white),
                     ),
                     title: Text('SmartFix Tech Team'),
                     subtitle: Text('Version 1.0.0'),
                   ),
                   const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      final Uri emailLaunchUri = Uri(
-                        scheme: 'mailto',
-                        path: 'support@smartfixtech.com',
-                        query: 'subject=About App Inquiry',
-                      );
-                      if (await canLaunchUrl(emailLaunchUri)) {
-                        await launchUrl(emailLaunchUri);
-                      }
-                    },
-                    icon: const Icon(Icons.email),
-                    label: const Text('Contact Developer'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.teal,
-                      minimumSize: const Size(double.infinity, 45),
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final Uri emailLaunchUri = Uri(
+                            scheme: 'mailto',
+                            path: 'mohitknayak18@gmail.com',
+                            query: 'subject=About App Inquiry',
+                          );
+                          if (await canLaunchUrl(emailLaunchUri)) {
+                            await launchUrl(emailLaunchUri);
+                          }
+                        },
+                        icon: const Icon(Icons.email),
+                        label: const Text('Contact Developer'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.teal,
+                          minimumSize: const Size(double.infinity, 45),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Onkit kumar nayak,Mohit kumar nayak',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ],
               ),
