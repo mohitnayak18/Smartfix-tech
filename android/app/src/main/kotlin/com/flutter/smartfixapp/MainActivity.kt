@@ -1,4 +1,4 @@
-package com.example.smartfixapp
+package com.flutter.smartfixapp
 
 import io.flutter.embedding.android.FlutterActivity
 
