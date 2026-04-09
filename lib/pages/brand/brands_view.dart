@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smartfixTech/pages/brand/brands_controller.dart';
@@ -116,10 +117,10 @@ class BrandsView extends StatelessWidget {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          data['logo'] ?? '',
+                        child: CachedNetworkImage(
+                          imageUrl: data['logo'] ?? '',
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(
+                          errorWidget: (_, __, ___) => const Icon(
                             Icons.phone_android,
                             size: 40,
                             color: Colors.grey,

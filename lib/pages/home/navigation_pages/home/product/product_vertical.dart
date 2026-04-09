@@ -42,7 +42,7 @@ class ProductcardVertical extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        splashColor: Colors.orange.withOpacity(0.15),
+        // splashColor: Colors.orange.withOpacity(0.15),
         onTap: () {
           log("serviceId:$id");
           Get.to(
@@ -109,12 +109,12 @@ class ProductcardVertical extends StatelessWidget {
                       child: Hero(
                         tag: 'product-$id', // ✅ UNIQUE TAG
                         child: Roundedimage(
-                          height: 80,
-                          width: 80,
+                          // height: 80,
+                          // width: 80,
                           imageUrl: imageUrl,
-                          applyImageRadius: true,
+                          // applyImageRadius: true,
                           isNetworkImage: true,
-                          fit: BoxFit.contain,
+                          fit: BoxFit.fitHeight,
                         ),
                       ),
                     ),
@@ -168,15 +168,7 @@ class ProductcardVertical extends StatelessWidget {
                       color: Colors.green.shade800,
                     ),
                   ),
-                  // const SizedBox(width: 8),
-                  // Text(
-                  //   '₹$orgprice',
-                  //   style: TextStyle(
-                  //     fontSize: 12,
-                  //     color: Colors.grey.shade600,
-                  //     decoration: TextDecoration.lineThrough,
-                  //   ),
-                  // ),
+                  
                 ],
               ),
             ],

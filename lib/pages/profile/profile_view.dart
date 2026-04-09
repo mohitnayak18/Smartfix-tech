@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:smartfixTech/api_calls/api_call.dart';
+import 'package:smartfixTech/pages/get_loaction.dart/get_location_screen.dart';
 import 'package:smartfixTech/pages/home/home_controller.dart';
 import 'package:smartfixTech/pages/order/order_listscreen.dart';
 import 'package:smartfixTech/pages/profile/widget/about_screen.dart';
 import 'package:smartfixTech/pages/profile/widget/legal_screen.dart';
 import 'package:smartfixTech/pages/profile/widget/support_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const _appBarTitleStyle = TextStyle(
   fontSize: 20,
@@ -40,57 +41,99 @@ class ProfileScreen extends StatelessWidget {
             _sectionTile(
               title: "My Account",
               children: [
-                _listItem(Icons.notifications, "My Notifications", () {
-                  Get.snackbar(
-                    "Coming Soon",
-                    "Notifications feature coming soon",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.teal,
-                    colorText: Colors.white,
-                  );
+                _listItem(Icons.star_rate, "Rating App", () async {
+                  await _launchPlayStore();
                 }),
-                _listItem(Icons.list_alt, "My List", () {
-                  Get.snackbar(
-                    "Coming Soon",
-                    "My List feature coming soon",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.teal,
-                    colorText: Colors.white,
-                  );
-                }),
+
                 _listItem(Icons.location_on, "Delivery Addresses", () {
-                  Get.snackbar(
-                    "Coming Soon",
-                    "Address management coming soon",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.teal,
-                    colorText: Colors.white,
-                  );
+                  Get.to(() => const GetLocationScreen());
                 }),
               ],
             ),
-
             _sectionTile(
-              title: "Payment Modes",
+              title: "Service Availability",
               children: [
-                _listItem(Icons.account_balance_wallet, "Saved Wallets", () {
-                  Get.snackbar(
-                    "Coming Soon",
-                    "Wallet feature coming soon",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.teal,
-                    colorText: Colors.white,
+                _listItem(Icons.location_city, "Available Locations", () {
+                  Get.bottomSheet(
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
+                          Text(
+                            "Available Locations",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          SizedBox(height: 10),
+
+                          // 👉 Kolkata
+                          // ExpansionTile(
+                          //   leading: Icon(Icons.location_city),
+                          //   title: Text("Kolkata"),
+                          //   children: [
+                          //     ListTile(title: Text("Salt Lake")),
+                          //     ListTile(title: Text("New Town")),
+                          //     ListTile(title: Text("Howrah")),
+                          //     ListTile(title: Text("Dum Dum")),
+                          //   ],
+                          // ),
+
+                          // 👉 Delhi
+                          ExpansionTile(
+                            leading: Icon(Icons.location_city),
+                            title: Text("Bhubaneswar"),
+                            children: [
+                              // ListTile(title: Text("Khandagiri")),
+                              ListTile(title: Text("Nuagan")),
+                              ListTile(title: Text("Patia")),
+                            ],
+                          ),
+
+                          // 👉 Mumbai
+                          // ExpansionTile(
+                          //   leading: Icon(Icons.location_city),
+                          //   title: Text("Mumbai"),
+                          //   children: [
+                          //     ListTile(title: Text("Andheri")),
+                          //     ListTile(title: Text("Bandra")),
+                          //     ListTile(title: Text("Thane")),
+                          //   ],
+                          // ),
+
+                          // SizedBox(height: 10),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: () => Get.back(),
+                            child: Text("Close"),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 }),
-                _listItem(Icons.credit_card, "Saved Cards", () {
-                  Get.snackbar(
-                    "Coming Soon",
-                    "Saved cards feature coming soon",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.teal,
-                    colorText: Colors.white,
-                  );
-                }),
+
+                // _listItem(Icons.my_location, "Check Availability", () {
+                //   Get.snackbar(
+                //     "Coming Soon",
+                //     "Auto location detection coming soon",
+                //     snackPosition: SnackPosition.BOTTOM,
+                //     backgroundColor: Colors.teal,
+                //     colorText: Colors.white,
+                //   );
+                // }),
               ],
             ),
 
@@ -106,21 +149,20 @@ class ProfileScreen extends StatelessWidget {
               ],
             ),
 
-            _sectionTile(
-              title: "Offer & Discounts",
-              children: [
-                _listItem(Icons.local_offer, "Available Offers", () {
-                  Get.snackbar(
-                    "Coming Soon",
-                    "Offers feature coming soon",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.teal,
-                    colorText: Colors.white,
-                  );
-                }),
-              ],
-            ),
-
+            // _sectionTile(
+            //   title: "Offer & Discounts",
+            //   children: [
+            //     _listItem(Icons.local_offer, "Available Offers", () {
+            //       Get.snackbar(
+            //         "Coming Soon",
+            //         "Offers feature coming soon",
+            //         snackPosition: SnackPosition.BOTTOM,
+            //         backgroundColor: Colors.teal,
+            //         colorText: Colors.white,
+            //       );
+            //     }),
+            //   ],
+            // ),
             _sectionTile(
               title: "More Information",
               children: [
@@ -139,7 +181,7 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 30),
             const Text(
-              "App Version 1.0.0",
+              "App Version 1.0.8",
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -161,6 +203,16 @@ class ProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
     );
+  }
+
+  Future<void> _launchPlayStore() async {
+    final Uri url = Uri.parse(
+      "https://play.google.com/store/apps/details?id=com.flutter.smartfixapp&pcampaignid=web_share",
+    );
+
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch Play Store';
+    }
   }
 
   Widget _buildAppBarTitle() {
@@ -271,7 +323,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, size: 16),
+          // const Icon(Icons.arrow_forward_ios, size: 16),
         ],
       ),
     );
@@ -288,13 +340,7 @@ class ProfileScreen extends StatelessWidget {
             Get.to(() => OrdersListScreen());
           }),
           _quickItem(context, Icons.home_outlined, "Saved Addresses", () {
-            Get.snackbar(
-              "Coming Soon",
-              "Address management coming soon",
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.teal,
-              colorText: Colors.white,
-            );
+            Get.to(() => const GetLocationScreen());
           }),
           _quickItem(context, Icons.help, "Help", () {
             Get.to(() => const SupportScreen());

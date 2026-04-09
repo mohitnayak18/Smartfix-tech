@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class OrderModel {
+  final String? partnerId;
   final String orderId;
   final String orderNumber;
   final String userId;
@@ -32,6 +33,7 @@ class OrderModel {
   final String? notes;
 
   OrderModel({
+    this.partnerId,
     required this.orderId,
     required this.orderNumber,
     required this.userId,
@@ -83,6 +85,7 @@ class OrderModel {
     }
     
     return OrderModel(
+      partnerId: data['partnerId'] ?? '',
       orderId: data['orderId'] ?? doc.id,
       orderNumber: data['orderNumber'] ?? '',
       userId: data['userId'] ?? '',
@@ -249,8 +252,10 @@ class OrderItem {
   final String? serviceType;
   final String? estimatedDuration;
   final Timestamp? addedAt;
+  final String? notes;
 
   OrderItem({
+    this.notes,
     required this.itemId,
     required this.productId,
     required this.productName,
@@ -273,6 +278,7 @@ class OrderItem {
       serviceType: map['serviceType'],
       estimatedDuration: map['estimatedDuration'],
       addedAt: map['addedAt'] as Timestamp?,
+      notes: map['notes'] as String?,
     );
   }
 
@@ -287,6 +293,7 @@ class OrderItem {
       'serviceType': serviceType,
       'estimatedDuration': estimatedDuration,
       'addedAt': addedAt,
+      'notes': notes,
     };
   }
 

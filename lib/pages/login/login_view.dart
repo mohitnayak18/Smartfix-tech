@@ -12,6 +12,7 @@ class LoginView extends StatelessWidget {
 
   final LoginController controller = Get.put(LoginController());
   final _formKey = GlobalKey<FormState>();
+  
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +35,9 @@ class LoginView extends StatelessWidget {
                       fit: BoxFit.contain,
                     ),
                     Dimens.boxHeight10,
+
                     Text(
-                      'Enter your phone number',
+                      'PhoneNumber'.tr,
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontSize: Dimens.twentyFour,
@@ -46,6 +48,10 @@ class LoginView extends StatelessWidget {
 
                     /// PHONE FIELD
                     IntlPhoneField(
+                     
+                      // readOnly: true,
+                      // showCursor: true,
+                      obscureText: false,
                       initialCountryCode: 'IN',
                       disableLengthCheck: true,
                       dropdownIconPosition: IconPosition.trailing,
@@ -53,6 +59,8 @@ class LoginView extends StatelessWidget {
                       flagsButtonPadding: const EdgeInsets.only(left: 12),
 
                       decoration: InputDecoration(
+                        isCollapsed: true,
+                        isDense: true,
                         hintText: 'Enter phone number',
                         filled: true,
                         fillColor: Colors.grey.shade100,
@@ -150,12 +158,6 @@ class LoginView extends StatelessWidget {
                         ),
                         onPressed: controller.isPhoneValid
                             ? () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => OtpScreen(),
-                                //   ),
-                                // );
                                 if (_formKey.currentState!.validate()) {
                                   controller.verifyPhoneNumber();
                                 }

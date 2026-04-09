@@ -1,10 +1,8 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
 import 'package:smartfixTech/pages/home/checkout/checkout_view.dart';
-import 'package:smartfixTech/theme/dimens.dart';
 
 class CheckoutBar extends StatelessWidget {
   final CartController cartCtrl;
@@ -49,31 +47,36 @@ class CheckoutBar extends StatelessWidget {
 
                 // Price Breakdown
                 _buildPriceDetailRow(
+                  icon: Icons.payments_outlined,
                   "Total MRP",
                   cartCtrl.subtotal.value,
                   isTotal: true,
                 ),
                 _buildPriceDetailRow(
+                  icon: Icons.account_balance_wallet_outlined,
                   "Platform Fee",
                   cartCtrl.platformFee.value,
-                  showCheck: true,
+                  // showCheck: true,
                 ),
                 _buildPriceDetailRow(
+                  icon: Icons.local_shipping_outlined,
                   "Shipping Fee",
                   cartCtrl.shippingFee.value,
-                  showCheck: true,
+                  // showCheck: true,
                 ),
                 if (cartCtrl.gstAmount.value > 0)
                   _buildPriceDetailRow(
+                    icon: Icons.receipt_long,
                     "GST & Charges",
                     cartCtrl.gstAmount.value,
-                    showCheck: true,
+                    // showCheck: true,
                   ),
                 _buildPriceDetailRow(
+                  icon: Icons.local_offer,
                   "Discount",
                   -cartCtrl.discount.value,
                   isDiscount: true,
-                  showCheck: true,
+                  // showCheck: true,
                 ),
 
                 const Divider(height: 20),
@@ -195,9 +198,19 @@ class CheckoutBar extends StatelessWidget {
                               );
                               return;
                             }
-                            // FirebaseCrashlytics.instance.crash();
-                            // Navigate to checkout - GetX handles the data automatically
-                            Get.to(() => const CheckoutView());
+                           Get.to(
+  () => CheckoutView(),
+  arguments: {
+    "cartItems": cartCtrl.cartItems,
+    // "subtotal": cartCtrl.subtotal.value,
+    "discount": cartCtrl.discount.value,
+    "platformFee": cartCtrl.platformFee.value,
+    "shippingFee": cartCtrl.shippingFee.value,
+    "gst": cartCtrl.gstAmount.value,
+    "total": cartCtrl.totalPrice.value,
+    "address": cartCtrl.selectedAddress.value,
+  },
+);
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
@@ -246,8 +259,8 @@ class CheckoutBar extends StatelessWidget {
     String label,
     double value, {
     bool isDiscount = false,
-    bool showCheck = false,
     bool isTotal = false,
+    required IconData icon,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -256,9 +269,8 @@ class CheckoutBar extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (showCheck)
-                Icon(Icons.check_circle, size: 13, color: Colors.teal.shade600),
-              if (showCheck) const SizedBox(width: 4),
+              Icon(icon, size: 16, color: Colors.teal),
+              const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(

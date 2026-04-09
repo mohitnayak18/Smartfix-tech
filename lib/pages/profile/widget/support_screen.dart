@@ -99,7 +99,7 @@ class SupportScreen extends StatelessWidget {
               color: Colors.blue,
               onTap: () async {
                 final Uri emailUri = Uri.parse(
-                  'mailto:support@smartfixtech.com',
+                  'mailto:smartfixtech3@gmail.com',
                 );
 
                 if (await canLaunchUrl(emailUri)) {
@@ -128,11 +128,15 @@ class SupportScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildFAQItem(
                     'How long does repair take?',
-                    'Most repairs are completed within 2-4 hours. Complex repairs may take 24-48 hours.',
+                    'The time needed for the android and iphone repair depends on the type of repair required and the availability of parts. We strive to provide the best customer service in the industry and make sure that all repairs are done correctly the first time. We guarantee satisfaction with each android & iphone repair. We constantly strive to finish repairs as promptly as possible without sacrificing quality. The majority of onsite repairs may be performed within one day of booking, but collection might take up to three working days. We offer a wide range of services and use only quality spare parts and labor for all our mobile repair services. The type of service defines the time needed for it to be repaired for all android & iphone repair services.',
                   ),
                   _buildFAQItem(
                     'Do you provide warranty?',
                     'Yes, all repairs come with a 90-day warranty on parts and labor.',
+                  ),
+                  _buildFAQItem(
+                    ' My mobile phone is not listed on the website. What to do now?',
+                    'In such cases, please contact us by email at smartfixtech3@gmail.com. We shall respond to you within one business day and try to rectify the issue as soon as possible.',
                   ),
                   _buildFAQItem(
                     'Can I track my repair?',
@@ -143,12 +147,32 @@ class SupportScreen extends StatelessWidget {
                     'We offer a 7-day satisfaction guarantee. Contact us within 7 days of repair.',
                   ),
                   _buildFAQItem(
-                    'Do you use genuine parts?',
-                    'Yes, we use high-quality parts sourced from authorized distributors.',
+                    'Do you use original parts?',
+                    'We use high-quality genuine OEM (Original Equipment Manufacturer) parts whenever possible. For some devices, we also offer premium aftermarket alternatives that meet or exceed original specifications.',
                   ),
                   _buildFAQItem(
-                    'Is my data safe?',
-                    'We prioritize your data privacy. You should backup your data before service.',
+                    'Is online mobile repair service safe and secure?',
+                    'We take data privacy seriously and adhere to strong standards to keep your data secure during the Onsite repair process. We recommend that you backup your data before visiting, and we will never access your data without your consent. Once the repair is completed, we will delete all data if stored in our systems. We are committed to protecting your data and will never share it with any third-parties without your explicit permission. Your online phone repairing journey with us is 100% safe.',
+                  ),
+                  _buildFAQItem(
+                    'What if I have more questions?',
+                    'Feel free to contact our customer support for any inquiries.',
+                  ),
+                  _buildFAQItem(
+                    'Is my personal information safe during repair?',
+                    'We take privacy very seriously. Our technicians are trained to respect your privacy and will only access your device to the extent necessary to complete the repair. We recommend setting a passcode and using privacy features when possible.',
+                  ),
+                  _buildFAQItem(
+                    'Can you repair water-damaged devices?',
+                    'Yes, we specialize in water damage repair. The success rate depends on the extent of the damage and how quickly the device is brought to us. We recommend powering off the device immediately and bringing it to us as soon as possible.',
+                  ),
+                  _buildFAQItem(
+                    'Is repair facility only available at home?',
+                    'SMartfix smartphone repair facility is available to its users both at home and at smartfix stores nearby you. Users can repair old phone in front of themselves and can also sell phone at the store.',
+                  ),
+                  _buildFAQItem(
+                    'What kind of parts does Cashify Repair use?',
+                    'From the screen, display, mic, speaker, battery, receiver, and charging port to even software issues, smartfix Repair promises its users 100% OEM Parts. Additionally, the products Cashify uses to repair your phone are sourced from outside India. To ensure quality and reliability, we test all our parts in-house before we use them in repair. All Cashify Repair technicians are experts, so you don’t have to worry about faulty installations. But in case you do, don’t worry, Cashify offers a warranty for its replaced parts.',
                   ),
                 ],
               ),

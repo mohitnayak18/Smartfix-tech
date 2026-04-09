@@ -103,17 +103,17 @@ class CartController extends GetxController {
     return null;
   }
 
-  double? getSelectedAddressDistance() {
-    if (selectedAddress.isNotEmpty && selectedAddress.containsKey('distance')) {
-      final distance = selectedAddress['distance'];
-      if (distance is num) {
-        return distance.toDouble();
-      } else if (distance is String) {
-        return double.tryParse(distance);
-      }
-    }
-    return null;
-  }
+  // double? getSelectedAddressDistance() {
+  //   if (selectedAddress.isNotEmpty && selectedAddress.containsKey('distance')) {
+  //     final distance = selectedAddress['distance'];
+  //     if (distance is num) {
+  //       return distance.toDouble();
+  //     } else if (distance is String) {
+  //       return double.tryParse(distance);
+  //     }
+  //   }
+  //   return null;
+  // }
 
   bool get hasSelectedAddress => selectedAddress.isNotEmpty;
 
@@ -173,12 +173,12 @@ class CartController extends GetxController {
     double? lng,
     Map<String, dynamic>? fullAddress,
     String? note,
-    String? contactPerson,
+    String? name,
     String? contactPhone,
     String? placeId,
     bool setAsDefault = false,
     String? phone,
-    double? distance,
+    // double? distance,
   }) async {
     try {
       final user = _auth.currentUser;
@@ -188,25 +188,26 @@ class CartController extends GetxController {
       final addressData = {
         'id': addressId,
         'userId': user.uid,
-        'userEmail': user.email ?? '',
+        // 'userEmail': user.email ?? '',
         'title': title,
         'address': address,
         'type': type,
         'lat': lat,
         'lng': lng,
         'fullAddress': fullAddress ?? {},
-        'note': note ?? '',
-        'contactPerson': contactPerson ?? '',
+        // 'note': note ?? '',
+        'contactPerson': name ?? '',
         'contactPhone': contactPhone ?? '',
         'placeId': placeId ?? '',
         'isDefault': setAsDefault,
         'phone': phone ?? '',
-        'distance': distance ?? 0.0,
+        // 'distance': distance ?? 0.0,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'lastUsedAt': FieldValue.serverTimestamp(),
       };
-
+      log('✅ Address data prepared for saving: $addressData');
+      log('✅ Contact person name: $name');
       // If setting as default, update other addresses
       if (setAsDefault) {
         await _updateDefaultAddress(addressId);
@@ -321,62 +322,6 @@ class CartController extends GetxController {
     }
   }
 
-  Future<bool> setAddressAsDefault(String addressId) async {
-    try {
-      final userId = _auth.currentUser?.uid;
-      if (userId == null) return false;
-
-      final snapshot = await addressesRef.get();
-      final batch = _firestore.batch();
-
-      for (final doc in snapshot.docs) {
-        final docRef = addressesRef.doc(doc.id);
-        if (doc.id == addressId) {
-          batch.update(docRef, {
-            'isDefault': true,
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
-        } else {
-          batch.update(docRef, {
-            'isDefault': false,
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
-        }
-      }
-
-      await batch.commit();
-
-      // Update local list
-      for (var i = 0; i < addresses.length; i++) {
-        if (addresses[i]['id'] == addressId) {
-          addresses[i]['isDefault'] = true;
-          addresses[i]['updatedAt'] = DateTime.now();
-        } else {
-          addresses[i]['isDefault'] = false;
-          addresses[i]['updatedAt'] = DateTime.now();
-        }
-      }
-      addresses.refresh();
-
-      Get.snackbar(
-        'Success',
-        'Default address updated',
-        backgroundColor: Colors.white,
-        colorText: Colors.black,
-      );
-      return true;
-    } catch (e) {
-      log('❌ Error setting default address: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to set default address',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
-  }
-
   Future<bool> deleteAddress(String addressId) async {
     try {
       final docRef = addressesRef.doc(addressId);
@@ -446,55 +391,55 @@ class CartController extends GetxController {
 
   // ==================== DISTANCE MANAGEMENT ====================
 
-  Future<void> updateDistance(double distance) async {
-    distanceInKm.value = distance;
+  // Future<void> updateDistance(double distance) async {
+  //   distanceInKm.value = distance;
 
-    if (selectedAddress.isEmpty) return;
+  //   if (selectedAddress.isEmpty) return;
 
-    // ⛔ DO NOT touch Firestore for current location
-    if (selectedAddress['type'] == 'current') {
-      selectedAddress['distance'] = distance;
-      selectedAddress.refresh();
-      return;
-    }
+  //   // ⛔ DO NOT touch Firestore for current location
+  //   if (selectedAddress['type'] == 'current') {
+  //     selectedAddress['distance'] = distance;
+  //     selectedAddress.refresh();
+  //     return;
+  //   }
 
-    await _updateAddressDistance(selectedAddress['id'], distance);
-  }
+  //   await _updateAddressDistance(selectedAddress['id'], distance);
+  // }
 
-  Future<void> _updateAddressDistance(String addressId, double distance) async {
-    // if (addressId == 'current') return;
-    try {
-      final userId = _auth.currentUser?.uid;
-      if (userId == null) return;
+  // Future<void> _updateAddressDistance(String addressId, double distance) async {
+  //   // if (addressId == 'current') return;
+  //   try {
+  //     final userId = _auth.currentUser?.uid;
+  //     if (userId == null) return;
 
-      final docRef = addressesRef.doc(addressId);
-      final docSnapshot = await docRef.get();
+  //     final docRef = addressesRef.doc(addressId);
+  //     final docSnapshot = await docRef.get();
 
-      if (docSnapshot.exists) {
-        await docRef.update({
-          'distance': distance,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+  //     if (docSnapshot.exists) {
+  //       await docRef.update({
+  //         'distance': distance,
+  //         'updatedAt': FieldValue.serverTimestamp(),
+  //       });
 
-        // Update local selected address
-        if (selectedAddress['id'] == addressId) {
-          selectedAddress['distance'] = distance;
-          selectedAddress.refresh();
-        }
+  //       // Update local selected address
+  //       if (selectedAddress['id'] == addressId) {
+  //         selectedAddress['distance'] = distance;
+  //         selectedAddress.refresh();
+  //       }
 
-        // Update local addresses list
-        final index = addresses.indexWhere((addr) => addr['id'] == addressId);
-        if (index != -1) {
-          addresses[index]['distance'] = distance;
-          addresses.refresh();
-        }
-      } else {
-        log('⚠️ Address document $addressId does not exist');
-      }
-    } catch (e) {
-      log('❌ Error updating address distance: $e');
-    }
-  }
+  //       // Update local addresses list
+  //       final index = addresses.indexWhere((addr) => addr['id'] == addressId);
+  //       if (index != -1) {
+  //         addresses[index]['distance'] = distance;
+  //         addresses.refresh();
+  //       }
+  //     } else {
+  //       log('⚠️ Address document $addressId does not exist');
+  //     }
+  //   } catch (e) {
+  //     log('❌ Error updating address distance: $e');
+  //   }
+  // }
 
   // ==================== PRIVATE HELPER METHODS ====================
 
@@ -561,12 +506,12 @@ class CartController extends GetxController {
   String formatAddressForDisplay(Map<String, dynamic> address) {
     final title = address['title']?.toString() ?? 'Address';
     final addr = address['address']?.toString() ?? '';
-    final note = address['note']?.toString();
+    // final note = address['note']?.toString();
 
     String display = '$title: $addr';
-    if (note != null && note.isNotEmpty) {
-      display += '\nNote: $note';
-    }
+    // if (note != null && note.isNotEmpty) {
+    //   display += '\nNote: $note';
+    // }
 
     return display;
   }
@@ -616,7 +561,7 @@ class CartController extends GetxController {
     if (!snap.exists) return;
 
     final data = snap.data()!;
-    log('Fetched app config: ${data.toString()}');
+    // log('Fetched app config: ${data.toString()}');
 
     platformFee.value = (data['platform_fee'] as num?)?.toDouble() ?? 0;
     gstPercentage.value = (data['gst_percentage'] as num?)?.toDouble() ?? 0;
@@ -690,23 +635,89 @@ class CartController extends GetxController {
     try {
       final user = _auth.currentUser;
       if (user == null) return;
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
       isLoading.value = true;
       cartItems.clear();
-      QuerySnapshot querySnapshot = await firestore
+
+      QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .doc(user.uid)
           .collection('cart')
           .get();
 
-      // log("Cart : ${querySnapshot.docs.length} items");
       for (var doc in querySnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
-        // log("Cart item data: $data");
         final cartId = doc.id;
+        // log('🔍 Fetching cart item details for cartId: $data');
+        // ✅ Get IDs from cart
+        // String productId = data['productId']?.toString() ?? '';
+        String productId = data['productId']?.toString() ?? '';
+        log('🔍 Fetching product details for productId: $productId');
+        String serviceName = '';
+        String finalproductId = productId;
+
+        // ✅ If we have productId, fetch product details
+        if (finalproductId.isNotEmpty) {
+          final productDoc = await _firestore
+              .collection('products')
+              .doc(finalproductId)
+              .get();
+
+          log('🔍 Fetching product details for productId: $productDoc');
+          if (productDoc.exists) {
+            final productData = productDoc.data() as Map<String, dynamic>;
+            finalproductId = productData['serviceId']?.toString() ?? '';
+            log('🔍 Fetching service details for serviceId: $finalproductId');
+            // ✅ Fetch service name
+            if (finalproductId.isNotEmpty) {
+              final serviceDoc = await _firestore
+                  .collection('service')
+                  .doc(finalproductId)
+                  .get();
+
+              if (serviceDoc.exists) {
+                final serviceData = serviceDoc.data() as Map<String, dynamic>;
+                serviceName = serviceData['name'] ?? '';
+                log('🔍 Fetching service details for serviceId: $serviceName');
+              }
+            }
+          } else {
+            // ✅ If product not found, use serviceId from cart
+            finalproductId = finalproductId.isNotEmpty
+                ? finalproductId
+                : data['serviceId']?.toString() ?? '';
+            if (finalproductId.isNotEmpty) {
+              final serviceDoc = await _firestore
+                  .collection('service')
+                  .doc(finalproductId)
+                  .get();
+
+              if (serviceDoc.exists) {
+                final serviceData = serviceDoc.data() as Map<String, dynamic>;
+                serviceName = serviceData['name'] ?? '';
+              }
+            }
+          }
+        } else if (finalproductId.isNotEmpty) {
+          // ✅ If no productId, try to get service details directly
+          final serviceDoc = await _firestore
+              .collection('service')
+              .doc(finalproductId)
+              .get();
+
+          if (serviceDoc.exists) {
+            final serviceData = serviceDoc.data() as Map<String, dynamic>;
+            serviceName = serviceData['name'] ?? '';
+            finalproductId = finalproductId;
+          }
+        }
+
+        // ✅ Add to cart list
         cartItems.add(
           CartItem(
-            id: data['id'] ?? 0,
+            productId: finalproductId,
+            serviceId: finalproductId,
+            serviceName: serviceName,
             title: data['title'] ?? '',
             brand: data['brand'] ?? '',
             price: (data['price'] as num).toDouble(),
@@ -714,6 +725,7 @@ class CartController extends GetxController {
             image: data['image'] ?? '',
             qty: RxInt(data['quantity'] ?? 1),
             cartId: cartId,
+            customerNote: data['customerNote'], 
             // notes: data['notes'],
           ),
         );
@@ -730,10 +742,10 @@ class CartController extends GetxController {
   Future<void> addToCart(Map<String, dynamic> product) async {
     final user = _auth.currentUser;
     if (user == null) return;
+
     log("userid:${user.uid}");
     var uuid = Uuid();
     final cartId = uuid.v1();
-    // final String docId = product['productId'].toString();
 
     final docRef = _firestore
         .collection('users')
@@ -744,28 +756,25 @@ class CartController extends GetxController {
     await docRef
         .set({
           'cartId': cartId,
-          'serviceId': product['serviceId'],
-          'title': product['title'],
-          'brand': product['brand'],
-          'model': product['model'],
-          'price': product['price'],
-          'image': product['image'],
-          'brandId': product['brandId'],
-          'modelId': product['modelId'],
-          'quantity': product['quantity'],
-          // 'notes': product['notes'] ?? '',
+          'serviceName': product['serviceName'] ?? '',
+
+          // 'serviceId': product['serviceId']?.toString() ?? '',
+          'productId': product['serviceId']?.toString() ?? '',
+          'title': product['title'] ?? '',
+          'brand': product['brand'] ?? '',
+          'model': product['model'] ?? '',
+          'price': product['price'] ?? 0,
+          'image': product['image'] ?? '',
+          'brandId': product['brandId']?.toString(),
+          'modelId': product['modelId']?.toString(),
+          'quantity': product['quantity'] ?? 1,
           'createdAt': FieldValue.serverTimestamp(),
+          'customerNote': product['customerNote'] ?? '',
         })
         .then((value) {
           Get.to(() => const CartView());
-
           loadCartFromFirebase();
         });
-    // }
-    // }
-    // catch (e) {
-    //   print("❌ Add to cart error: $e");
-    // }
   }
 
   Future<void> clearCart() async {
@@ -855,21 +864,38 @@ class CartController extends GetxController {
   }
 
   // Real-time cart stream
+  // Real-time cart stream
   Stream<List<CartItem>> getCartStream() {
     final user = _auth.currentUser;
     if (user == null) return Stream.value([]);
     return userRef.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
+
+        // FIXED: Convert productId to String properly
+        String? productIdValue;
+        if (data['productId'] != null) {
+          if (data['productId'] is Map) {
+            productIdValue = data['productId']['name']?.toString();
+          } else {
+            productIdValue = data['productId'].toString();
+          }
+        } else if (data['id'] != null) {
+          productIdValue = data['id'].toString();
+        }
+
         return CartItem(
-          id: data['id'] ?? 0,
+          productId: productIdValue,
+          serviceName: data['serviceName'] ?? '',
           title: data['title'] ?? '',
           brand: data['brand'] ?? '',
           model: data['model'] ?? '',
           price: (data['price'] as num).toDouble(),
           image: data['image'] ?? '',
           qty: RxInt(data['quantity'] ?? 1),
-          notes: data['notes'],
+          cartId: doc.id,
+          customerNote: data['customerNote'], 
+          // notes: data['notes'],
         );
       }).toList();
     });

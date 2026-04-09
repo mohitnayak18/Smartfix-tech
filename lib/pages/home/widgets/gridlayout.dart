@@ -10,6 +10,7 @@ class Gridlayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      // hitTestBehavior: HitTestBehavior.translucent,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: docs.length,
@@ -23,12 +24,11 @@ class Gridlayout extends StatelessWidget {
         final data = docs[index].data();
 
         return ProductcardVertical(
+          
           id: docs[index].id, // ✅ Correct Firestore doc ID
           title: data['name'] ?? 'No name',
-           offer: data['offerto']?.toString() ?? '0',
-           price:data['priceto']?.toString() ?? '0',
-          // cutPrice: data['cutofferprice']?.toString() ?? '0',
-          // orgprice: data['originalprice']?.toString() ?? '0',
+          offer: data['offerto']?.toString() ?? '0',
+          price: data['priceto']?.toString() ?? '0',
           imageUrl: data['imageUrl'] ?? '',
         );
       },

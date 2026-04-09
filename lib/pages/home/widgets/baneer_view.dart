@@ -41,7 +41,7 @@ class BaneerView extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               child: CarouselSlider(
                 options: CarouselOptions(
-                  height: 200,
+                  height: 210,
                   autoPlay: controller.banners.length > 1,
                   autoPlayInterval: const Duration(seconds: 4),
                   autoPlayAnimationDuration: const Duration(milliseconds: 1000),
@@ -66,22 +66,6 @@ class BaneerView extends StatelessWidget {
                             isNetworkImage: true,
                             fit: BoxFit.cover,
                           ),
-
-                          // GRADIENT OVERLAY
-                          // Container(
-                          //   decoration: BoxDecoration(
-                          //     gradient: LinearGradient(
-                          //       begin: Alignment.bottomCenter,
-                          //       end: Alignment.topCenter,
-                          //       colors: [
-                          //         Colors.black.withOpacity(0.6),
-                          //         Colors.transparent,
-                          //         Colors.transparent,
-                          //         Colors.black.withOpacity(0.2),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
 
                           // CONTENT
                           Padding(

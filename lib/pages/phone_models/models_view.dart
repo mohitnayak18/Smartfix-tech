@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smartfixTech/pages/phone_models/models_controller.dart';
@@ -167,30 +168,19 @@ class _ModelsViewState extends State<ModelsView> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: imageUrl.isNotEmpty
-                              ? Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        }
+                              ? CachedNetworkImage(
+                                  imageUrl: imageUrl,
+                                  fit: BoxFit.contain,
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) {
                                         return Center(
                                           child: CircularProgressIndicator(
-                                            value:
-                                                loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                                ? loadingProgress
-                                                          .cumulativeBytesLoaded /
-                                                      loadingProgress
-                                                          .expectedTotalBytes!
-                                                : null,
+                                            value: downloadProgress.progress,
                                             strokeWidth: 2,
                                           ),
                                         );
                                       },
-                                  errorBuilder: (_, __, ___) {
+                                  errorWidget: (context, url, error) {
                                     return Container(
                                       color: Colors.grey.shade200,
                                       child: const Icon(
@@ -258,70 +248,4 @@ class _ModelsViewState extends State<ModelsView> {
       }),
     );
   }
-
-  // Widget _buildPriceDisplay(
-  //   // String originalPrice,
-  //   // String discountedPrice,
-  //   String offer,
-  // ) {
-  //   // final double? original = double.tryParse(originalPrice);
-  //   // final double? discounted = double.tryParse(discountedPrice);
-
-  //   if (discounted == null || discounted == 0) {
-  //     return const Text(
-  //       'Price on request',
-  //       style: TextStyle(fontSize: 14, color: Colors.grey),
-  //     );
-  //   }
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Row(
-  //         children: [
-  //           Text(
-  //             '₹${discounted.toStringAsFixed(0)}',
-  //             style: const TextStyle(
-  //               fontSize: 16,
-  //               fontWeight: FontWeight.bold,
-  //               color: Colors.green,
-  //             ),
-  //           ),
-  //           if (original != null && original > discounted)
-  //             Padding(
-  //               padding: const EdgeInsets.only(left: 8),
-  //               child: Text(
-  //                 '₹${original.toStringAsFixed(0)}',
-  //                 style: TextStyle(
-  //                   fontSize: 13,
-  //                   color: Colors.grey.shade600,
-  //                   decoration: TextDecoration.lineThrough,
-  //                 ),
-  //               ),
-  //             ),
-  //         ],
-  //       ),
-
-  //       // Show offer if available
-  //       if (offer != '0' && offer.isNotEmpty)
-  //         Container(
-  //           margin: const EdgeInsets.only(top: 4),
-  //           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-  //           decoration: BoxDecoration(
-  //             color: Colors.green.shade50,
-  //             borderRadius: BorderRadius.circular(4),
-  //             border: Border.all(color: Colors.green.shade100),
-  //           ),
-  //           child: Text(
-  //             offer.endsWith('%') ? offer : '$offer% OFF',
-  //             style: TextStyle(
-  //               fontSize: 11,
-  //               color: Colors.green.shade700,
-  //               fontWeight: FontWeight.w600,
-  //             ),
-  //           ),
-  //         ),
-  //     ],
-  //   );
-  // }
 }

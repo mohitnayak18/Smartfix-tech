@@ -1,293 +1,318 @@
-// checkout_controller.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+// import 'package:smartfixTech/controllers/cart_controller.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
-import 'package:uuid/uuid.dart';
+// import 'package:uuid/uuid.dart';
 
 class CheckoutController extends GetxController {
-  // Controllers
-  final TextEditingController addressCtrl = TextEditingController();
   final TextEditingController phoneCtrl = TextEditingController();
-  
-  // State variables
-  RxBool useSavedAddress = true.obs;
 
+  // State
+  RxBool useSavedAddress = true.obs;
   String? selectedAddressId;
-  
-  // UUID instance
-  final Uuid _uuid = const Uuid();
-  
-  // Get other controllers
-  CartController get cartCtrl => Get.find<CartController>();
-  
+// Add these to your CheckoutController class
+
+final TextEditingController noteCtrl = TextEditingController();
+final RxString customerNote = "".obs;
+final RxBool hasNote = false.obs;
+
+String getCustomerNote() {
+  return noteCtrl.text.trim();
+}
+
+void clearNote() {
+  noteCtrl.clear();
+  customerNote.value = "";
+  hasNote.value = false;
+}
+
+void setNote(String note) {
+  customerNote.value = note;
+  hasNote.value = note.isNotEmpty;
+}
+
+// Update onClose method
+@override
+void onClose() {
+  phoneCtrl.dispose();
+  // phoneCtrl.dispose();
+    super.onClose();
+  noteCtrl.dispose(); // Add this line
+  super.onClose();
+}
+
+// Get cart controller
+CartController get cartCtrl => Get.find<CartController>();
+
   @override
   void onInit() {
     super.onInit();
     _initializeAddress();
+    fetchTermsAndConditions();
   }
-  
+
   void _initializeAddress() {
-    // Safely check selectedAddress
-    final selectedAddress = cartCtrl.selectedAddress;
-    if (selectedAddress is Map && 
-        selectedAddress.isNotEmpty && 
-        selectedAddress['id'] != null) {
-      selectedAddressId = selectedAddress['id'];
-      addressCtrl.text = selectedAddress['address'] ?? '';
-      phoneCtrl.text = selectedAddress['phone'] ?? '';
-    } else if (cartCtrl.addresses.isNotEmpty) {
-      final firstAddress = cartCtrl.addresses.first;
-      selectedAddressId = firstAddress['id'];
-      addressCtrl.text = firstAddress['address'] ?? '';
-      phoneCtrl.text = firstAddress['phone'] ?? '';
+    if (cartCtrl.selectedAddress.isNotEmpty) {
+      selectedAddressId = cartCtrl.selectedAddress['id'];
+      phoneCtrl.text = cartCtrl.selectedAddress['phone'] ?? '';
     }
   }
-  
+
   String getDeliveryDate() {
-    final now = Timestamp.now().toDate();
+    final now = DateTime.now();
     final deliveryDate = now.add(const Duration(minutes: 45));
     return DateFormat('MMM dd, EEEE').format(deliveryDate);
   }
-  
+
   String formatCurrency(double amount) {
     return '₹${NumberFormat('#,##0').format(amount)}';
   }
-  
-  IconData getAddressIcon(String type) {
-    switch (type) {
-      case 'home':
-        return Icons.home_rounded;
-      case 'work':
-        return Icons.work_rounded;
-      case 'other':
-        return Icons.location_on_rounded;
-      default:
-        return Icons.location_on_rounded;
-    }
-  }
-  
-  void toggleAddressType() {
-  useSavedAddress.value = !useSavedAddress.value;
-}
 
-  
-  void selectAddress(String addressId) {
-    selectedAddressId = addressId;
-    final selectedAddress = cartCtrl.addresses.firstWhere(
-      (addr) => addr['id'] == addressId,
-      orElse: () => {},
-    );
-    
-    if (selectedAddress.isNotEmpty) {
-      addressCtrl.text = selectedAddress['address'] ?? '';
-      phoneCtrl.text = selectedAddress['phone'] ?? '';
-    }
-    update();
+  bool validatePhone() {
+    String phone = phoneCtrl.text.trim().replaceAll(RegExp(r'\D'), '');
+    return phone.length == 10;
   }
-  
+
+  Map<String, dynamic> getAddressData() {
+    if (cartCtrl.selectedAddress.isNotEmpty) {
+      return {
+        'title': cartCtrl.selectedAddress['title'] ?? 'Address',
+        'address': cartCtrl.selectedAddress['address'] ?? '',
+        'phone': cartCtrl.selectedAddress['phone'] ?? '',
+        'type': cartCtrl.selectedAddress['type'] ?? 'home',
+        'latitude': cartCtrl.selectedAddress['lat'],
+        'longitude': cartCtrl.selectedAddress['lng'],
+        'customer': cartCtrl.selectedAddress['name'] ?? 'Customer',
+        'distance': cartCtrl.selectedAddress['distance'] ?? 0.0,
+      };
+    }
+    return {'title': 'No Address', 'address': '', 'type': 'other'};
+  }
+
   void selectAddressFromList(Map<String, dynamic> address) {
+    cartCtrl.selectAddress(address);
     selectedAddressId = address['id'];
-    addressCtrl.text = address['address'] ?? '';
     phoneCtrl.text = address['phone'] ?? '';
     update();
   }
-  
-  // Generate unique order ID
-  String generateOrderId() {
-    // Generate a v4 UUID
-    final uuid = _uuid.v4();
-    
-    // Create a custom order number format: ORD-{timestamp}-{uuid-short}
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final shortUuid = uuid.substring(0, 8).toUpperCase();
-    final orderNumber = 'ORD-$timestamp-$shortUuid';
-    
-    return orderNumber;
+
+  // Terms & Conditions
+  final RxBool isTermsAccepted = false.obs;
+  final RxString termsContent = "Loading terms & conditions...".obs;
+  final RxString privacyContent = "Loading privacy policy...".obs;
+  final RxBool isLoadingTerms = false.obs;
+
+  // Fetch Terms & Conditions from Firestore settings collection
+  Future<void> fetchTermsAndConditions() async {
+    try {
+      isLoadingTerms.value = true;
+
+      // Get terms_conditions document from settings collection
+      final DocumentSnapshot termDoc = await FirebaseFirestore.instance
+          .collection('settings')
+          .doc('term_conditions')
+          .get();
+
+      if (termDoc.exists) {
+        final data = termDoc.data() as Map<String, dynamic>;
+
+        // Fetch terms content
+        termsContent.value =
+            data['terms'] ?? data['terms_condition'] ?? data['content'] ?? '';
+
+        // Fetch privacy policy content
+        privacyContent.value =
+            data['privacy'] ??
+            data['privacy_policy'] ??
+            data['privacyContent'] ??
+            '';
+
+        print("Terms loaded successfully from Firestore");
+      } else {
+        print("term_conditions document not found, using defaults");
+        // termsContent.value = _getDefaultTerms();
+        // privacyContent.value = _getDefaultPrivacy();
+      }
+    } catch (e) {
+      print('Error fetching terms from Firestore: $e');
+      // termsContent.value = _getDefaultTerms();
+      // privacyContent.value = _getDefaultPrivacy();
+    } finally {
+      isLoadingTerms.value = false;
+    }
   }
-  
-  // Validation methods
- bool validatePhone() {
-  String phone = phoneCtrl.text.trim();
-  
-  // Remove any non-digit characters (spaces, dashes, etc.)
-  String cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
-  
-  // Check if it's exactly 10 digits
-  if (cleanPhone.length == 10) {
+
+  // Validate terms before placing order
+  bool validateTerms() {
+    if (!isTermsAccepted.value) {
+      Get.snackbar(
+        "Accept Terms Required",
+        "Please accept the Terms & Conditions and Privacy Policy to continue",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
+      return false;
+    }
     return true;
   }
-  
-  return false;
-}
-  
-  bool validateAddress() {
-    if (useSavedAddress == true) {
-      return selectedAddressId != null;
-    } else {
-      return addressCtrl.text.trim().isNotEmpty;
-    }
-  }
-  
-  // Get address data for order
-  Map<String, dynamic> getAddressData() {
-    if (useSavedAddress == true && selectedAddressId != null) {
-      final selectedAddress = cartCtrl.addresses.firstWhere(
-        (addr) => addr['id'] == selectedAddressId,
-      );
-      return {
-        'title': selectedAddress['title'] ?? 'Address',
-        'address': selectedAddress['address'],
-        'type': selectedAddress['type'] ?? 'home',
-        'latitude': selectedAddress['latitude'],
-        'longitude': selectedAddress['longitude'],
-      };
-    } else {
-      return {
-        'title': 'New Address',
-        'address': addressCtrl.text.trim(),
-        'type': 'other',
-      };
-    }
-  }
-  
-  // Prepare cart items for order
-  List<Map<String, dynamic>> prepareOrderItems() {
-    final List<Map<String, dynamic>> orderItems = [];
-    
-    for (final dynamic item in cartCtrl.cartItems) {
-      Map<String, dynamic> itemMap;
-      
-      if (item is Map<String, dynamic>) {
-        itemMap = item;
-      } else if (item is Map) {
-        itemMap = Map<String, dynamic>.from(item);
-      } else if (item.runtimeType.toString().contains('CartItem')) {
-        itemMap = _convertCartItemToMap(item);
-      } else {
-        continue;
-      }
-      
-      // Generate unique item ID for each cart item
-      final itemId = _uuid.v4();
-      
-      orderItems.add({
-        'itemId': itemId,
-        'productId': itemMap['id']?.toString() ??
-            itemMap['productId']?.toString() ?? '',
-        'productName': itemMap['name']?.toString() ??
-            itemMap['productName']?.toString() ??
-            itemMap['title']?.toString() ?? 'Service',
-        'productImage': itemMap['image']?.toString() ??
-            itemMap['productImage']?.toString() ??
-            itemMap['imageUrl']?.toString(),
-        'price': _getDoubleValue(itemMap, ['price', 'unitPrice', 'amount']),
-        'quantity': _getIntValue(itemMap, ['quantity', 'qty', 'count']),
-        'serviceType': itemMap['serviceType']?.toString() ?? 
-            itemMap['type']?.toString(),
-        'estimatedDuration': itemMap['estimatedDuration'],
-        'addedAt': DateTime.now().toIso8601String(),
-      });
-    }
-    
-    return orderItems;
-  }
-  
-  // Create order method
-  Future<Map<String, dynamic>?> createOrder({
-    required List<Map<String, dynamic>> cartItems,
-    required double subtotal,
-    required double platformFee,
-    required double shippingFee,
-    required double gstAmount,
-    required double discount,
-    required double totalAmount,
-    required Map<String, dynamic> address,
-    required String phone,
-    required String userId, // Add user ID parameter
-  }) async {
-    try {
-      // Generate order data with UUID
-      final orderId = _uuid.v4();
-      final orderNumber = generateOrderId();
-      final timestamp = DateTime.now();
-      
-      final orderData = {
-        'orderId': orderId,
-        'orderNumber': orderNumber,
-        'userId': userId, // Add user ID
-        'items': cartItems,
-        'subtotal': subtotal,
-        'platformFee': platformFee,
-        'shippingFee': shippingFee,
-        'gstAmount': gstAmount,
-        'discount': discount,
-        'totalAmount': totalAmount,
-        'address': address,
-        'phone': phone,
-        'status': 'pending',
-        'paymentMethod': 'cash_on_delivery',
-        'paymentStatus': 'pending',
-        'createdAt': Timestamp.fromDate(timestamp),
-        'updatedAt': Timestamp.fromDate(timestamp),
-        'expectedDelivery': Timestamp.fromDate(
-          timestamp.add(const Duration(minutes: 45))
+
+  void showTermsDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        child: Container(
+          width: Get.width * 0.9,
+          height: Get.height * 0.8,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              // FIXED: Row with Flexible to prevent overflow
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.description, color: Colors.teal.shade700),
+                  ),
+                  const SizedBox(width: 12),
+                  // Use Flexible instead of direct Text
+                  Flexible(
+                    child: Text(
+                      "Terms & Conditions",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Obx(() {
+                  if (isLoadingTerms.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return SingleChildScrollView(
+                    child: Text(
+                      termsContent.value,
+                      style: const TextStyle(height: 1.6, fontSize: 14),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Get.back(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 45),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text("Close"),
+              ),
+            ],
+          ),
         ),
-      };
-      
-      return {
-        'orderData': orderData,
-        'orderId': orderId,
-        'orderNumber': orderNumber,
-      };
-    } catch (e) {
-      print('Error creating order data: $e');
-      return null;
-    }
+      ),
+    );
   }
-  
-  // Helper methods
-  Map<String, dynamic> _convertCartItemToMap(dynamic cartItem) {
-    try {
-      if (cartItem.toJson != null) {
-        return cartItem.toJson();
-      } else if (cartItem.toMap != null) {
-        return cartItem.toMap();
-      } else {
-        return {};
-      }
-    } catch (e) {
-      return {};
-    }
-  }
-  
-  double _getDoubleValue(Map<String, dynamic> item, List<String> keys) {
-    for (var key in keys) {
-      if (item.containsKey(key) && item[key] != null) {
-        final value = item[key];
-        if (value is num) return value.toDouble();
-        if (value is String) return double.tryParse(value) ?? 0.0;
-      }
-    }
-    return 0.0;
-  }
-  
-  int _getIntValue(Map<String, dynamic> item, List<String> keys) {
-    for (var key in keys) {
-      if (item.containsKey(key) && item[key] != null) {
-        final value = item[key];
-        if (value is num) return value.toInt();
-        if (value is String) return int.tryParse(value) ?? 1;
-      }
-    }
-    return 1;
-  }
-  
-  @override
-  void onClose() {
-    addressCtrl.dispose();
-    phoneCtrl.dispose();
-    super.onClose();
+
+  // Show Privacy Dialog
+  void showPrivacyDialog() {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          width: Get.width * 0.9,
+          height: Get.height * 0.8,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              // FIXED: Row with Flexible to prevent overflow
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.privacy_tip, color: Colors.teal.shade700),
+                  ),
+                  const SizedBox(width: 12),
+                  // Use Flexible instead of direct Text
+                  Flexible(
+                    child: Text(
+                      "Privacy Policy",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Obx(() {
+                  if (isLoadingTerms.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return SingleChildScrollView(
+                    child: Text(
+                      privacyContent.value,
+                      style: const TextStyle(height: 1.6, fontSize: 14),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Get.back(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 45),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text("Close"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

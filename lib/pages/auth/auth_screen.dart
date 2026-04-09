@@ -2,15 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pinput/pinput.dart';
+import 'package:smartfixTech/pages/login/login_controller.dart';
+import 'package:sms_autofill/sms_autofill.dart'; // ✅ ADD THIS
 import 'package:smartfixTech/pages/auth/auth_controller.dart';
 import 'package:smartfixTech/theme/dimens.dart';
 import 'package:smartfixTech/utils/asset_constants.dart';
 
-class OtpScreen extends StatelessWidget {
-  OtpScreen({super.key});
+class OtpScreen extends StatefulWidget {
+  const OtpScreen({super.key});
 
+  @override
+  State<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> with CodeAutoFill {
   final AuthController controller = Get.find<AuthController>();
+  final LoginController loginController = Get.find<LoginController>();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+void initState() {
+  super.initState();
+  listenForCode();
+
+  SmsAutoFill().getAppSignature.then((signature) {
+    print("APP HASH: $signature");
+  });
+}
+
+  @override
+  void dispose() {
+    cancel(); // ✅ STOP listening
+    super.dispose();
+  }
+
+  
+  @override
+void codeUpdated() {
+  controller.otpController.text = code ?? '';
+
+  if ((code ?? '').length == 6) {
+    controller.verifyOtp();  // auto submit
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +68,13 @@ class OtpScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true, // ✅ important
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: Dimens.edgeInsets25,
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
 
@@ -88,9 +121,8 @@ class OtpScreen extends StatelessWidget {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0D9488),
-                        disabledBackgroundColor: const Color(
-                          0xFF0D9488,
-                        ).withOpacity(0.6),
+                        disabledBackgroundColor:
+                            const Color(0xFF0D9488).withOpacity(0.6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -98,12 +130,6 @@ class OtpScreen extends StatelessWidget {
                       onPressed: controller.isLoading.value
                           ? null
                           : () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => HomeScreen(),
-                              //   ),
-                              // );
                               if (_formKey.currentState!.validate()) {
                                 controller.verifyOtp();
                               }
@@ -129,8 +155,10 @@ class OtpScreen extends StatelessWidget {
 
                 TextButton(
                   onPressed: Get.back,
-                  child: const Text('Edit phone number?',style: TextStyle(color: Colors.teal),),
-
+                  child: const Text(
+                    'Edit phone number?',
+                    style: TextStyle(color: Colors.teal),
+                  ),
                 ),
 
                 const SizedBox(height: 20),

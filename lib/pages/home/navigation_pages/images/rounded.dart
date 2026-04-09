@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class Roundedimage extends StatelessWidget {
   const Roundedimage({
     super.key,
     this.width,
-    this.height ,  
+    this.height,
     required this.imageUrl,
     this.applyImageRadius = true,
     this.border,
@@ -17,7 +18,7 @@ class Roundedimage extends StatelessWidget {
   });
 
   final double? width, height;
-  final String? imageUrl; 
+  final String? imageUrl;
   final bool applyImageRadius;
   final BoxBorder? border;
   final Color backgroundColor;
@@ -25,8 +26,7 @@ class Roundedimage extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool isNetworkImage;
   final VoidCallback? onpressed;
-  final double borderRadius ;
-
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +39,19 @@ class Roundedimage extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           border: border,
-        borderRadius: BorderRadius.circular(borderRadius),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: ClipRRect(
-          borderRadius: applyImageRadius? BorderRadius.circular(borderRadius) : BorderRadius.zero,
+          borderRadius: applyImageRadius
+              ? BorderRadius.circular(borderRadius)
+              : BorderRadius.zero,
           child: Image(
-            fit: fit,image: isNetworkImage? NetworkImage(imageUrl!) :AssetImage(imageUrl!) as ImageProvider ,
+            fit: fit,
+            image: isNetworkImage
+                ? CachedNetworkImageProvider(imageUrl!)
+                : AssetImage(imageUrl!) as ImageProvider,
             //image: AssetImage('assets/images/borderimg3.png'),
-            
+
             //fit: BoxFit.contain,
           ),
         ),

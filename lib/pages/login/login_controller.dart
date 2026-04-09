@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:smartfixTech/api_calls/services/common_service.dart';
 import 'package:smartfixTech/navigators/app_pages.dart';
+import 'package:smartfixTech/utils/app_constants.dart';
 
 class LoginController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -39,9 +41,20 @@ class LoginController extends GetxController {
         phoneNumber: fullPhoneNumber,
 
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // await _auth.signInWithCredential(credential);
-          // Get.offAllNamed(Routes.home);
-        },
+  try {
+    final userCredential =
+        await _auth.signInWithCredential(credential);
+
+    final user = userCredential.user;
+
+    Get.find<CommonService>()
+        .saveValue(AppConstants.token, user?.uid);
+
+    Get.offAllNamed(Routes.home);
+  } catch (e) {
+    print("Auto verification failed: $e");
+  }
+},
 
         
         verificationFailed: (FirebaseAuthException e) {

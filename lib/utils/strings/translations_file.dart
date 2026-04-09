@@ -9,7 +9,7 @@ class TranslationFile extends Translations {
   Map<String, Map<String, String>> get keys => {
     'en': {
       'Searchinstore': 'Search in store',
-      'recommended Products': 'Recommended Services',
+      'recommended Products': 'Recommended All Services',
       'PhoneNumber': 'Enter phonenumber',
       'onboard3': 'Smart Doorstep Repair',
       'textonb3':

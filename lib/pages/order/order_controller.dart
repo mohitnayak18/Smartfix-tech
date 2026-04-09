@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:smartfixTech/api_calls/models/PartnerModel.dart';
+import 'package:smartfixTech/api_calls/models/cart_model.dart';
 import 'package:smartfixTech/api_calls/models/order_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,6 +19,7 @@ class OrderController extends GetxController {
       .collection('orders');
 
   // Rx observables
+  final RxList<CartItem> cart = <CartItem>[].obs;
   final RxList<OrderModel> orders = <OrderModel>[].obs;
   final Rx<OrderModel?> currentOrder = Rx<OrderModel?>(null);
   final RxBool isLoading = false.obs;
@@ -52,7 +55,7 @@ class OrderController extends GetxController {
 
   // Create order from cart - FIXED VERSION
   Future<Map<String, dynamic>> createOrderFromCart({
-    required List<Map<String, dynamic>> cartItems,
+    required List<CartItem> cart,
     required double subtotal,
     required double platformFee,
     required double shippingFee,
@@ -63,6 +66,9 @@ class OrderController extends GetxController {
     required String phone,
     required String userId, // Made required
     String? customerName,
+    String? partnerId,
+    // required customerNote,
+    String? customerNote,
   }) async {
     try {
       isLoading(true);
@@ -90,17 +96,50 @@ class OrderController extends GetxController {
         'orderNumber': orderNumber,
         'userId': userId, // IMPORTANT: Store user ID
         // Order details
-        'items': cartItems.map((item) {
-          item['itemId'] ??= _uuid.v4();
+        'items': cart.map((item) {
+          // Ensure we work with a mutable Map<String, dynamic>
+          Map<String, dynamic> mapItem;
 
-          final addedAt = item['addedAt'];
-          if (addedAt is String) {
-            item['addedAt'] = Timestamp.fromDate(DateTime.parse(addedAt));
-          } else if (addedAt == null) {
-            item['addedAt'] = now;
+          if (item is Map<String, dynamic>) {
+            mapItem = Map<String, dynamic>.from(item as Map<dynamic, dynamic>);
+          } else {
+            // Try common conversion methods on model objects, falling back to probing common fields
+            try {
+              final dynamic d = item;
+              // Try toMap() then toJson() if available
+              try {
+                mapItem = Map<String, dynamic>.from(d.toMap());
+              } catch (_) {
+                try {
+                  mapItem = Map<String, dynamic>.from(d.toJson());
+                } catch (_) {
+                  // Fallback: probe common field names
+                  mapItem = {
+                    'itemId': (d.serviceId ?? d.id) ?? _uuid.v4(),
+                    'name': (d.model ?? ''),
+                    'price': (d.price ?? 0),
+                    'quantity': (d.qty ?? d.quantity ?? 1),
+                    'addedAt': d.addedAt ?? now,
+                  };
+                }
+              }
+            } catch (_) {
+              // As a last resort create a minimal map
+              mapItem = {'itemId': _uuid.v4(), 'addedAt': now};
+            }
           }
 
-          return item;
+          // Ensure itemId exists
+          mapItem['itemId'] ??= _uuid.v4();
+
+          final addedAt = mapItem['addedAt'];
+          if (addedAt is String) {
+            mapItem['addedAt'] = Timestamp.fromDate(DateTime.parse(addedAt));
+          } else if (addedAt == null) {
+            mapItem['addedAt'] = now;
+          }
+
+          return mapItem;
         }).toList(),
 
         // Pricing
@@ -113,10 +152,21 @@ class OrderController extends GetxController {
         'finalAmount': totalAmount,
 
         // Customer info
-        'address': address,
+        'address': {
+          'id': address['id'] ?? '',
+          'title': address['address_title'] ?? 'Delivery Address',
+          'address': address['address'] ?? '',
+          'type': address['label'] ?? 'home',
+          'customer': address['name'] ?? 'Customer',
+          'phone': address['phone'] ?? phone,
+          'latitude': address['latitude'] ?? address['lat'],
+          'longitude': address['longitude'] ?? address['lng'],
+          // 'distance': address['distance'] ?? 0.0,
+        },
         'phone': phone,
-        'customerName': customerName ?? address['title'] ?? 'Customer',
-
+        'customerName': customerName ?? address['name'] ?? 'Customer',
+        'partnerId': partnerId ?? '', // Auto-assigned if provided
+        // 'assignedTechnicianName': partnerName ?? '',
         // Status
         'status': 'pending',
         'paymentMethod': 'cash_on_delivery',
@@ -135,11 +185,11 @@ class OrderController extends GetxController {
         'timeline': initialTimeline,
 
         // Metadata
-        'source': 'mobile_app',
-        'version': '1.0',
+        // 'source': 'mobile_app',
+        // 'version': '1.0',
         'notes': '',
       };
-
+      log('Created order with items: ${cart.toList()}');
       // ✅ FIXED: Save ONLY once under orderId
       await ordersCollection.doc(orderId).set(orderData);
 
@@ -163,6 +213,27 @@ class OrderController extends GetxController {
       print('Error creating order: $e');
       print('Stack trace: $stackTrace');
       return {'success': false, 'error': e.toString()};
+    }
+  }
+  // Add this import at the top of order_controller.dart
+
+  // Add this method to your OrderController class
+  Future<PartnerModel?> fetchPartnerById(String partnerId) async {
+    try {
+      if (partnerId.isEmpty) return null;
+
+      final partnerDoc = await FirebaseFirestore.instance
+          .collection('partners')
+          .doc(partnerId)
+          .get();
+
+      if (partnerDoc.exists) {
+        return PartnerModel.fromMap(partnerDoc.data()!, partnerDoc.id);
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching partner: $e');
+      return null;
     }
   }
 

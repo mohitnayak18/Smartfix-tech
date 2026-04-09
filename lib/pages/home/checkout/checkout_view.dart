@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -33,6 +34,12 @@ class CheckoutView extends StatelessWidget {
 
                 // Address Section - Shows selected address from cart
                 _buildAddressSection(cartCtrl),
+                
+                // Order Items
+                _buildOrderItems(cartCtrl),
+
+                // NEW: Customer Notes Section
+                _buildCustomerNoteSection(checkoutCtrl),
 
                 // Price Summary with Icons
                 _buildPriceSummary(cartCtrl),
@@ -75,18 +82,6 @@ class CheckoutView extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
       ),
-      // leading: IconButton(
-      //   icon: const Icon(Icons.arrow_back_ios, size: 20),
-      //   onPressed: () => Get.back(),
-      // ),
-      // actions: [
-      // IconButton(
-      //   icon: const Icon(Icons.headset_mic, size: 22),
-      //   onPressed: () {
-      //     // Handle support
-      //   },
-      // ),
-      // ],
     );
   }
 
@@ -235,6 +230,110 @@ class CheckoutView extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // NEW: Customer Notes Section
+  Widget _buildCustomerNoteSection(CheckoutController checkoutCtrl) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.amber.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.note_add,
+                  size: 18,
+                  color: Colors.amber.shade700,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                "Add Instructions (Optional)",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: checkoutCtrl.noteCtrl,
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: "E.g., Please call before arriving, Gate code: 1234, Special requests...",
+              hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.teal.shade400),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+              prefixIcon: Icon(
+                Icons.edit_note,
+                size: 18,
+                color: Colors.amber.shade600,
+              ),
+            ),
+            onChanged: (value) {
+              checkoutCtrl.setNote(value);
+            },
+          ),
+          if (checkoutCtrl.hasNote.value)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    size: 12,
+                    color: Colors.green.shade600,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    "Note will be shared with technician",
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -460,13 +559,7 @@ class CheckoutView extends StatelessWidget {
             controller: checkoutCtrl.phoneCtrl,
             keyboardType: TextInputType.phone,
             maxLength: 10,
-            buildCounter:
-                (
-                  context, {
-                  required currentLength,
-                  required isFocused,
-                  maxLength,
-                }) => null,
+            buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
             decoration: InputDecoration(
               hintText: "Enter 10-digit mobile number",
               hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
@@ -490,7 +583,6 @@ class CheckoutView extends StatelessWidget {
                   : null,
             ),
             onChanged: (value) {
-              // Force update to show/hide check icon
               checkoutCtrl.phoneCtrl.text = value.trim();
               checkoutCtrl.phoneCtrl.selection = TextSelection.fromPosition(
                 TextPosition(offset: checkoutCtrl.phoneCtrl.text.length),
@@ -585,7 +677,6 @@ class CheckoutView extends StatelessWidget {
               value: cartCtrl.subtotal.value,
             ),
             const SizedBox(height: 10),
-
             _buildPriceRowWithIcon(
               icon: Icons.discount_outlined,
               label: "Discount",
@@ -593,21 +684,18 @@ class CheckoutView extends StatelessWidget {
               isDiscount: true,
             ),
             const SizedBox(height: 10),
-
             _buildPriceRowWithIcon(
               icon: Icons.devices,
               label: "Platform Fee",
               value: cartCtrl.platformFee.value,
             ),
             const SizedBox(height: 10),
-
             _buildPriceRowWithIcon(
               icon: Icons.delivery_dining,
               label: "Shipping Fee",
               value: cartCtrl.shippingFee.value,
               showFree: cartCtrl.shippingFee.value == 0,
             ),
-
             if (cartCtrl.gstAmount.value > 0) ...[
               const SizedBox(height: 10),
               _buildPriceRowWithIcon(
@@ -616,7 +704,6 @@ class CheckoutView extends StatelessWidget {
                 value: cartCtrl.gstAmount.value,
               ),
             ],
-
             const Divider(height: 24),
 
             // Total with Icon
@@ -674,50 +761,6 @@ class CheckoutView extends StatelessWidget {
                 ],
               ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Savings Banner
-            if (cartCtrl.discount.value > 0)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.green.shade50, Colors.teal.shade50],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green.shade200),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade100,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.savings,
-                        color: Colors.green.shade700,
-                        size: 14,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        "You save ₹${NumberFormat('#,##0').format(cartCtrl.discount.value)} on this order!",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.green.shade700,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
           ],
         ),
       ),
@@ -917,65 +960,198 @@ class CheckoutView extends StatelessWidget {
                 ),
               ),
             ),
-
-            const SizedBox(height: 12),
-
-            // Additional payment info
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 16,
-                    color: Colors.blue.shade600,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "You can pay via Cash, UPI, or Card at the time of service",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.blue.shade800,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildOrderItems(CartController cartCtrl) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "SERVICE DETAILS",
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+
+          ListView.builder(
+            itemCount: cartCtrl.cartItems.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              final item = cartCtrl.cartItems[index];
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.build, color: Colors.teal),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.title ?? "Service",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            "${item.brand ?? ""} ${item.model ?? ""}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      "₹${NumberFormat('#,##0').format(item.price ?? 0)}",
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTermsSection() {
+    final CheckoutController checkoutCtrl = Get.find<CheckoutController>();
+
     return Container(
       color: Colors.white,
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.check_circle_outline,
-            size: 16,
-            color: Colors.teal.shade300,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              "By continuing, you agree to our Terms of Use & Privacy Policy",
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey.shade600,
-                height: 1.4,
-              ),
+          Obx(
+            () => Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Transform.scale(
+                  scale: 0.9,
+                  child: Checkbox(
+                    value: checkoutCtrl.isTermsAccepted.value,
+                    onChanged: (value) {
+                      checkoutCtrl.isTermsAccepted.value = value ?? false;
+                    },
+                    activeColor: Colors.teal,
+                    checkColor: Colors.white,
+                    fillColor: MaterialStateProperty.resolveWith<Color>((
+                      states,
+                    ) {
+                      if (states.contains(MaterialState.selected)) {
+                        return Colors.teal;
+                      }
+                      return Colors.grey.shade300;
+                    }),
+                    side: const BorderSide(color: Colors.teal),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: RichText(
+                    softWrap: true,
+                    textAlign: TextAlign.left,
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                        height: 1.4,
+                      ),
+                      children: [
+                        const TextSpan(text: "I agree to the "),
+                        TextSpan(
+                          text: "Terms & Conditions",
+                          style: TextStyle(
+                            color: Colors.teal.shade700,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: (TapGestureRecognizer()
+                            ..onTap = () => checkoutCtrl.showTermsDialog()),
+                        ),
+                        const TextSpan(text: " and "),
+                        TextSpan(
+                          text: "Privacy Policy",
+                          style: TextStyle(
+                            color: Colors.teal.shade700,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: (TapGestureRecognizer()
+                            ..onTap = () => checkoutCtrl.showPrivacyDialog()),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
+          if (!checkoutCtrl.isTermsAccepted.value)
+            Padding(
+              padding: const EdgeInsets.only(top: 8, left: 40),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: Colors.orange.shade700,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        "Please accept Terms & Conditions to place order",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.orange.shade800,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -1000,7 +1176,6 @@ class CheckoutView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Order Summary
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1050,8 +1225,6 @@ class CheckoutView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-
-          // Place Order Button
           SizedBox(
             width: double.infinity,
             height: 54,
@@ -1083,8 +1256,6 @@ class CheckoutView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-
-          // Cancel Button
           TextButton(
             onPressed: () => Get.back(),
             style: TextButton.styleFrom(foregroundColor: Colors.grey.shade600),
@@ -1099,6 +1270,9 @@ class CheckoutView extends StatelessWidget {
     CheckoutController checkoutCtrl,
     CartController cartCtrl,
   ) async {
+    if (!checkoutCtrl.validateTerms()) {
+      return;
+    }
     // Validate phone
     if (!checkoutCtrl.validatePhone()) {
       Get.snackbar(
@@ -1138,29 +1312,29 @@ class CheckoutView extends StatelessWidget {
       // Get controllers
       final OrderController orderCtrl = Get.put(OrderController());
 
-      // Prepare order data
-      final orderItems = checkoutCtrl.prepareOrderItems();
+      // Prepare order data with ALL address fields
       final addressData = {
-        'title': cartCtrl.selectedAddress['title'] ?? 'Delivery Address',
+        'id': cartCtrl.selectedAddress['id'] ?? '',
+        'title':
+            cartCtrl.selectedAddress['title'] ??
+            cartCtrl.selectedAddress['address_title'] ??
+            'Delivery Address',
         'address': cartCtrl.selectedAddress['address'] ?? '',
-        'type': cartCtrl.selectedAddress['type'] ?? 'home',
+        'type':
+            cartCtrl.selectedAddress['type'] ??
+            cartCtrl.selectedAddress['label'] ??
+            'home',
+        'customer': cartCtrl.selectedAddress['name'] ?? 'Customer',
+        'phone': cartCtrl.selectedAddress['phone'] ?? '',
+        'latitude': cartCtrl.selectedAddress['lat'],
+        'longitude': cartCtrl.selectedAddress['lng'],
+        'distance': cartCtrl.selectedAddress['distance'] ?? 0.0,
+        'isDefault': cartCtrl.selectedAddress['isDefault'] ?? false,
       };
 
-      // Show processing message
-      // Get.snackbar(
-      //   "Processing Order",
-      //   "Please wait while we place your order...",
-      //   backgroundColor: Colors.blue,
-      //   colorText: Colors.white,
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   duration: const Duration(seconds: 2),
-      //   margin: const EdgeInsets.all(16),
-      //   borderRadius: 12,
-      // );
-
-      // Create order
+      // Create order using the CartController's cartItems
       final result = await orderCtrl.createOrderFromCart(
-        cartItems: orderItems,
+        cart: cartCtrl.cartItems,
         subtotal: cartCtrl.subtotal.value,
         platformFee: cartCtrl.platformFee.value,
         shippingFee: cartCtrl.shippingFee.value,
@@ -1170,7 +1344,8 @@ class CheckoutView extends StatelessWidget {
         address: addressData,
         phone: checkoutCtrl.phoneCtrl.text.trim(),
         userId: userId,
-        customerName: addressData['title'] ?? 'Customer',
+        customerName: addressData['name'] ?? 'Customer',
+        customerNote: checkoutCtrl.getCustomerNote(), // ADD THIS LINE
       );
 
       if (result['success'] == true) {

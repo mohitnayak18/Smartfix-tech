@@ -76,7 +76,8 @@ class _AddressWidgetState extends State<AddressWidget> {
                         type: result["type"] ?? "Other",
                         lat: result["lat"],
                         lng: result["lng"],
-                        distance: result["distance"],
+                        name: result
+                        // distance: result["distance"],
                       );
                     }
                   },
@@ -309,7 +310,8 @@ class _AddressWidgetState extends State<AddressWidget> {
                       type: result["type"] ?? "Other",
                       lat: result["lat"],
                       lng: result["lng"],
-                      distance: result["distance"],
+                      // distance: result["distance"],
+                      name: result["name"],
                     );
                   }
                 },

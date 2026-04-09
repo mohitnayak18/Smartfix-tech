@@ -1,8 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
-
 import 'package:smartfixTech/pages/cart/widget/adress_widget.dart';
 import 'package:smartfixTech/pages/cart/widget/checkout_bar.dart';
 import 'package:smartfixTech/pages/order/order.dart';
@@ -321,27 +321,26 @@ class CartView extends StatelessWidget {
                           color: Colors.teal.shade50,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Image.network(
-                          item.image,
-                          fit: BoxFit.contain,
-                          cacheHeight: 100,
-                          cacheWidth: 100,
-                          // height: 240,
-                          // width: 2,
-
-                          // errorBuilder: (context, error, stackTrace) {
-                          //   // return Icon(
-                          //   //   _getServiceIcon(item.notes),
-                          //   //   color: Colors.teal.shade600,
-                          //   //   size: 24,
-                          //   // );
-                          // },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: CachedNetworkImage(
+                            imageUrl: item.image,
+                            fit: BoxFit.contain,
+                            memCacheHeight: 100,
+                            memCacheWidth: 100,
+                            placeholder: (context, url) => const Center(
+                              child: SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.image_not_supported),
+                          ),
                         ),
-                        // child: Icon(
-                        //   _getServiceIcon(item.notes),
-                        //   color: Colors.teal.shade600,
-                        //   size: 24,
-                        // ),
                       ),
                       const SizedBox(width: 12),
 
@@ -400,14 +399,14 @@ class CartView extends StatelessWidget {
                       // Quantity controls
                       Container(
                         padding: const EdgeInsets.only(
-                          // left: 2,
-                          right: 2,
-                          top: 2,
+                          // left: 10,
+                          // right: 24,
+                          // top: 2,
                           bottom: 2,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.grey.shade200),
                         ),
                         child: Row(
@@ -460,19 +459,19 @@ class CartView extends StatelessWidget {
                 ),
 
                 // Optional: Service details
-                if (item.notes != null && item.notes!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    child: Text(
-                      item.notes!,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                // if (item.notes != null && item.notes!.isNotEmpty)
+                //   Padding(
+                //     padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                //     child: Text(
+                //       item.notes!,
+                //       style: TextStyle(
+                //         color: Colors.grey.shade600,
+                //         fontSize: 13,
+                //       ),
+                //       maxLines: 2,
+                //       overflow: TextOverflow.ellipsis,
+                //     ),
+                //   ),
 
                 // Item total and remove button
                 Padding(
@@ -666,7 +665,7 @@ class CartView extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           Text(
-            "Your cart is feeling light!",
+            "Your Cart is Waiting",
             style: TextStyle(
               fontSize: 24,
               color: Colors.grey.shade800,
@@ -677,7 +676,7 @@ class CartView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
-              "Add amazing services to get started with your purchase journey",
+              "Fix your mobile today!\nChoose a repair service and our technician will reach your doorstep.",
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontSize: 15,
@@ -799,19 +798,11 @@ class CartView extends StatelessWidget {
                         // ✅ FIXED: Use the passed cartId parameter
                         await cartCtrl.removeItem(cartId);
 
-                        // Optional: Show snackbar after successful removal
-                        Get.snackbar(
-                          "Item Removed",
-                          "Item has been removed from cart",
-                          backgroundColor: Colors.white,
-                          colorText: Colors.red,
-                          borderRadius: 12,
-                          duration: const Duration(seconds: 2),
-                          icon: const Icon(
-                            Icons.check_circle,
-                            color: Colors.white,
-                          ),
-                        );
+                        //  Optional: Show snackbar after successful removal
+                        // Get.snackbar(
+                        //   "Item Removed",
+                        //   "Item has been removed from cart",
+                        //
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,

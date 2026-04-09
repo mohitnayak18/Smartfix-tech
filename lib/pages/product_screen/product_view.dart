@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:smartfixTech/pages/cart/cart_controller.dart';
 import 'package:smartfixTech/pages/product_screen/product_controller.dart';
 import 'package:smartfixTech/theme/dimens.dart';
@@ -99,9 +101,9 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
             _imageSection(),
             _titleSection(),
             _priceSection(),
+            _qualityCheckSection(),
             _ratingSection(),
             _offersSection(),
-            _qualityCheckSection(),
             _highlightsSection(),
             _descriptionSection(),
           ],
@@ -247,9 +249,9 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
 
     return Image.network(
       url,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
+      // width: size,
+      // height: size,
+      fit: BoxFit.scaleDown,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return _buildLoadingIndicator(loadingProgress);
@@ -513,174 +515,10 @@ class _ProductFullScreenState extends State<ProductFullScreen> {
   }
 
   Widget _offersSection() {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Available Offers",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Dimens.boxWidth8,
-          const Text("• Bank Offer: 5% Cashback"),
-          const Text("• No Cost EMI Available"),
-          const Text("• Special Price Offer"),
-        ],
-      ),
-    );
-  }
-
-Widget _qualityCheckSection() {
-  return Obx(() {
-    final products = controller.products;
-
-    if (products.isEmpty) {
-      return const SizedBox();
-    }
-
-    // If no product is selected yet, select the first one by default
-    if (selectedServiceId.value.isEmpty && products.isNotEmpty) {
-      // Use a microtask to avoid setState during build
-      Future.microtask(() {
-        if (mounted) {
-          selectedServiceId.value = products.first['id']?.toString() ?? '';
-        }
-      });
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(
-              "Select your related itmes".tr,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.teal.shade800,
-              ),
-            ),
-          ),
-          Dimens.boxHeight8,
-          SizedBox(
-            height: 160,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                final item = products[index];
-                // Get the ID - try different possible keys
-                final serviceId = item['id']?.toString() ?? 
-                                 item['serviceId']?.toString() ?? 
-                                 item['documentId']?.toString() ?? '';
-                
-                // Compare with selectedServiceId
-                final isSelected = selectedServiceId.value == serviceId;
-
-                return GestureDetector(
-                  onTap: () {
-                    // log("Tapped on service: $serviceId");
-                    // Update the selected service ID
-                    selectedServiceId.value = serviceId;
-                    
-                    // Get.snackbar(
-                    //   "Selected",
-                    //   "${item['name']} selected",
-                    //   snackPosition: SnackPosition.BOTTOM,
-                    //   backgroundColor: Colors.teal,
-                    //   colorText: Colors.white,
-                    //   duration: const Duration(seconds: 1),
-                    // );
-                  },
-                  child: Container(
-                    width: 140,
-                    margin: const EdgeInsets.only(right: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected
-                            ? Colors.teal
-                            : Colors.grey.shade200,
-                        width: isSelected ? 2 : 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: isSelected
-                              ? Colors.teal.withOpacity(0.2)
-                              : Colors.grey.shade100,
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Image.network(
-                              item['image'] ?? serviceImageUrl,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.image, size: 40),
-                            ),
-                          ),
-                          Text(
-                            item['name'] ?? 'Service',
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Dimens.boxHeight4,
-                          Text(
-                            "₹${item['discountPrice']?.toString() ?? item['price']?.toString() ?? '0'}",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: isSelected
-                                  ? Colors.teal
-                                  : Colors.grey.shade700,
-                            ),
-                          ),
-                          if (isSelected)
-                             Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child:Text('Selected'.tr),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  });
-}
-
-  // Updated Highlights Section with Firebase integration
-  Widget _highlightsSection() {
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('products')
-          .doc(modelId)
-          .collection('services')
-          .doc(selectedServiceId.value)
+          .collection('settings')
+          .doc('avlOffers')
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -698,20 +536,21 @@ Widget _qualityCheckSection() {
         }
 
         List<String> highlights = [];
-        if (snapshot.hasData && snapshot.data!.exists) {
-          final data = snapshot.data!.data() as Map<String, dynamic>?;
-          if (data != null && data.containsKey('highlights')) {
-            highlights = List<String>.from(data['highlights'] ?? []);
-          }
-        }
 
-        // If no highlights in Firebase, show default ones
+          if (snapshot.hasData && snapshot.data!.exists) {
+        final data = snapshot.data!.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('avlOffers')) {
+          highlights = List<String>.from(data['avlOffers']);
+        }
+      }
+
         if (highlights.isEmpty) {
           highlights = [
             "Doorstep Repair",
             "Repair in 45 Minutes",
-            "6 Months Warranty",
-            "Genuine Parts",
+            // "6 Months Warranty",
+            "OEM Parts",
           ];
         }
 
@@ -720,40 +559,257 @@ Widget _qualityCheckSection() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Highlights",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  // Optional: Add admin controls here
-                ],
+              const Text(
+                "Special Offers",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              Dimens.boxHeight8,
-              ...highlights
-                  .map(
-                    (highlight) => Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.check_circle,
-                            color: Colors.teal,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              "• $highlight",
-                              style: const TextStyle(fontSize: 14),
-                            ),
+              const SizedBox(height: 8),
+
+              ...highlights.map((highlight) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.discount,
+                        color: Colors.orange,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          highlight,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _qualityCheckSection() {
+    return Obx(() {
+      final products = controller.products;
+
+      if (products.isEmpty) {
+        return const SizedBox();
+      }
+
+      // If no product is selected yet, select the first one by default
+      if (selectedServiceId.value.isEmpty && products.isNotEmpty) {
+        // Use a microtask to avoid setState during build
+        Future.microtask(() {
+          if (mounted) {
+            selectedServiceId.value = products.first['id']?.toString() ?? '';
+          }
+        });
+      }
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                "Select your related itmes".tr,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.teal.shade800,
+                ),
+              ),
+            ),
+            Dimens.boxHeight8,
+            SizedBox(
+              height: 160,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final item = products[index];
+                  // Get the ID - try different possible keys
+                  final serviceId =
+                      item['id']?.toString() ??
+                      item['serviceId']?.toString() ??
+                      item['documentId']?.toString() ??
+                      '';
+
+                  // Compare with selectedServiceId
+                  final isSelected = selectedServiceId.value == serviceId;
+
+                  return GestureDetector(
+                    onTap: () {
+                      // log("Tapped on service: $serviceId");
+                      // Update the selected service ID
+                      selectedServiceId.value = serviceId;
+
+                      // Get.snackbar(
+                      //   "Selected",
+                      //   "${item['name']} selected",
+                      //   snackPosition: SnackPosition.BOTTOM,
+                      //   backgroundColor: Colors.teal,
+                      //   colorText: Colors.white,
+                      //   duration: const Duration(seconds: 1),
+                      // );
+                    },
+                    child: Container(
+                      width: 140,
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.teal
+                              : Colors.grey.shade200,
+                          width: isSelected ? 2 : 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isSelected
+                                ? Colors.teal.withOpacity(0.2)
+                                : Colors.grey.shade100,
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Image.network(
+                                item['image'] ?? serviceImageUrl,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.image, size: 40),
+                              ),
+                            ),
+                            Text(
+                              item['name'] ?? 'Service',
+                              maxLines: 4,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Dimens.boxHeight4,
+                            Text(
+                              "₹${item['discountPrice']?.toString() ?? item['price']?.toString() ?? '0'}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected
+                                    ? Colors.teal
+                                    : Colors.grey.shade700,
+                              ),
+                            ),
+                            if (isSelected)
+                              Padding(
+                                padding: EdgeInsets.only(top: 4),
+                                child: Text('Selected'.tr),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
-                  )
-                  .toList(),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  // Updated Highlights Section with Firebase integration
+  Widget _highlightsSection() {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('settings')
+          .doc('highlights')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.all(12),
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.all(12),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        List<String> highlights = [];
+
+        if (snapshot.hasData && snapshot.data!.exists) {
+          final data = snapshot.data!.data() as Map<String, dynamic>?;
+
+          if (data != null && data.containsKey('highlights')) {
+            highlights = List<String>.from(data['highlights']);
+          }
+        }
+
+        if (highlights.isEmpty) {
+          highlights = [
+            "Doorstep Repair",
+            "Repair in 45 Minutes",
+            "6 Months Warranty",
+            "New Parts",
+          ];
+        }
+
+        return Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Highlights",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+
+              ...highlights.map((highlight) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.library_books_rounded,
+                        color: Colors.teal.shade300,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          highlight,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ],
           ),
         );
@@ -764,9 +820,7 @@ Widget _qualityCheckSection() {
   Widget _descriptionSection() {
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: Text(
-        "Professional $brandName $modelName repair service with warranty.",
-      ),
+      child: Text("Professional $brandName $modelName repair service."),
     );
   }
 
@@ -959,18 +1013,17 @@ class FullScreenImageView extends StatelessWidget {
           child: InteractiveViewer(
             minScale: 0.5,
             maxScale: 4,
-            child: Image.network(
-              imageUrl,
-              errorBuilder: (_, __, ___) => const Column(
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              errorWidget: (context, url, error) => const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.broken_image, color: Colors.white, size: 100),
                   SizedBox(height: 16),
                 ],
               ),
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(
+              progressIndicatorBuilder: (context, url, downloadProgress) {
+                return Center(
                   child: CircularProgressIndicator(color: Colors.white),
                 );
               },
